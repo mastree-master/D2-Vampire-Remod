@@ -20,7 +20,7 @@ for ($i = 0; $i -lt 30 -and (Get-Process 'D2S Remod' -ErrorAction SilentlyContin
 Get-Process 'D2S Remod' -ErrorAction SilentlyContinue | Stop-Process -Force
 
 # 2. 최신 버전 확인. 업데이트 모드인데 이미 최신이면 바로 실행
-$have = if (Test-Path "$Home2\version.txt") { (Get-Content "$Home2\version.txt" -Raw).Trim() } else { '' }
+$have = if (Test-Path "$Home2\version.txt") { (Get-Content "$Home2\version.txt" -Raw).Trim().TrimStart([char]0xFEFF) } else { '' }
 try { $latest = (Invoke-WebRequest "https://raw.githubusercontent.com/$Repo/main/version.txt" -UseBasicParsing).Content.Trim() } catch { Fail "GitHub 에 연결하지 못했습니다.`n$($_.Exception.Message)" }
 if ($Mode -eq 'update' -and $have -eq $latest -and (Test-Path "$Game\D2S Remod.exe")) { Start-Process "$Game\D2S Remod.exe"; exit 0 }
 
@@ -63,7 +63,7 @@ if ($p.ExitCode -ne 0 -or -not (Test-Path "$Game\D2S Remod.exe")) { Fail "리모
 $ws = New-Object -ComObject WScript.Shell
 $lnk = $ws.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Desktop')) 'D2S Remod.lnk'))
 $lnk.TargetPath = "$Game\D2S Remod.exe"; $lnk.WorkingDirectory = $Game; $lnk.Save()
-Set-Content "$Home2\version.txt" $latest -Encoding UTF8
+[IO.File]::WriteAllText("$Home2\version.txt", $latest)
 Copy-Item "$Src\D2S-Remod.bat" (Join-Path $Home2 'D2S-Remod.bat') -Force -ErrorAction SilentlyContinue
 
 if ($Mode -ne 'update') { Msg "D2S Remod v$latest 설치를 마쳤습니다.`n바탕화면의 'D2S Remod' 로 실행하세요.`n(원작 게임·세이브와 따로 실행됩니다)" }
