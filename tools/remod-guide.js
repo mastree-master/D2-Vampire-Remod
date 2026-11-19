@@ -1,0 +1,118 @@
+// 리모드 안내서: 처음 켜면 한 번 자동으로 뜨고, 이후에는 채팅 창 [?] 옆 또는 J 키로 연다. 왼쪽 목차를 누르면 오른쪽에 설명
+(() => {
+  const PAGES = [
+    ['처음 시작', `REMOD 에 오신 걸 환영합니다! 원작 D2 Survivors 에 새 아이템·창고·멀티플레이·도전 콘텐츠를 더한 리모드입니다.
+
+■ 꼭 알아 둘 단축키
+· J — 이 안내서
+· B — 창고 (어디서나)
+· H — 룬워드 도움말
+· F2 보관 설정 · F4 룬워드 목록 · F6 설명서 · F10 업데이트 기록
+· Enter — 채팅 입력
+
+■ 화면 오른쪽 아래 채팅 창
+일반·전체·거래·길드 채팅과 [숙제] [대기실] [길드 관리] 버튼이 있습니다.
+
+■ 창 닫기
+모든 창은 오른쪽 위 [✕] 로 닫습니다.`],
+    ['창고와 재료 탭', `■ 창고 (B)
+위쪽 탭: 개인 · 공유 · 고유 · 재료. 왼쪽에 공유 창고 1~9 페이지 목록(우클릭으로 이름 바꾸기)과 [큐브] 버튼이 있습니다.
+
+■ 재료 탭
+룬 33칸, 정수, 지도·계약서·교본, 열쇠·장기 칸이 늘 같은 자리에 있습니다.
+· 줍는 룬·정수 등은 재료 탭에 먼저 자동으로 들어갑니다 (칸마다 9,999개).
+· 클릭 = 1개 꺼내기, 우클릭 = 개수를 정해서 꺼내기.
+· 인벤의 재료는 창고를 연 채 우클릭하면 제자리로 들어갑니다.
+· 열쇠·장기는 원작 보관함(인벤 오른쪽 아래 숫자)과 같은 숫자입니다.
+
+■ 고유 탭
+왼쪽 [원작 고유] / [리모드 고유] 버튼으로 등록창을 바꿔 봅니다.`],
+    ['리모드 아이템', `■ 리모드 전용 아이템
+유니크 1,000개 넘게, 세트 300종, 룬워드 750개가 추가돼 있습니다. 이름과 옵션은 모두 리모드 전용입니다.
+
+■ 룬워드 만들기
+소켓 있는 일반(흰색) 아이템에 룬을 순서대로 끼우면 됩니다. 조합은 H 키 룬워드 도움말에서 확인하세요 (이름에 마우스를 대면 옵션).
+
+■ 쥬얼
+리모드 전용 쥬얼 옵션 10종, 직업 스킬 탭 +1 쥬얼, 스킬 하나 +1~2 쥬얼이 있습니다.
+
+■ 레어 아이템
+레어 장비·쥬얼은 15% 확률로 지금 직업 스킬 하나에 +1~2 가 붙습니다.`],
+    ['호라드릭 큐브', `창고 왼쪽 [큐브] 버튼으로 엽니다.
+
+· 룬 올리기 — 같은 룬 3개 → 다음 룬
+· 쥬얼 / 부적 다시 굴리기 — 손에 든 채로, 라주크의 정수 1개
+· 골드 교환 — 남는 골드로 정수·룬·용병 아이템 사기
+· 공포의 지도 — 펼치면 그 판에 위험 2 + 보상 2 접사
+· 용병 — 계약서(등급 +1, 최대 10), 훈련 교본(스킬 +1, 최대 3)
+· 보스 탑 — 버티기 도전 (공포 100 이상)
+· 보스 소환 — 던전에서 룬 + 정수로 보스 부르기`],
+    ['보스 탑', `공포 영역 100 이상을 깬 사람만 열립니다. 던전 안에서 큐브 → [보스 탑] → 입장.
+
+· 안다리엘 · 두리엘 · 메피스토 · 디아블로 · 바알 탑 5개
+· 처음부터 몬스터가 3배, 1분마다 더 세집니다. 2분마다 탑 보스가 나옵니다.
+· 90초 또는 1,000킬마다 봉인된 두루마리 3개 → 1개 열기
+  - 이번 판 강화: 공격력·받는 피해·생명력·이동 속도·MF·골드·회복
+  - 아이템: 오래 버틸수록 좋은 룬·정수·쥬얼 등
+  - [5초 뒤 자동으로 고르기] 를 켜 두면 알아서 고릅니다.
+· 화면 위에 버틴 시간, 고른 강화 합계, 연 두루마리가 보입니다.
+· 죽으면 끝. 버틴 시간이 탑별 순위에 올라갑니다.`],
+    ['멀티플레이', `■ 들어가기
+메인 메뉴 [멀티플레이] 또는 채팅 창 [대기실]. 공개 방 목록에서 입장하거나, 방 이름 + 비밀번호로 만들고 들어갑니다.
+
+■ 파티
+· 같은 방 사람끼리 자동으로 파티가 됩니다 (최대 4명).
+· 방장의 몬스터를 다 같이 잡습니다. 경험치·드롭은 각자.
+· 한 명 늘 때마다 몬스터 체력 +50%, 경험치 +30%.
+· 방을 만들 때 [어려움] 을 고르면 더 세고 보상도 큽니다.
+
+■ 이름
+처음 접속하면 "닉네임#번호" 를 받습니다. /이름 새닉네임 으로 닉네임만 바꿉니다.
+
+■ 길드 · 아이템 보내기
+[길드 관리] 에서 길드 만들기·가입. 같은 방 사람에게 손에 든 아이템을 보낼 수 있습니다 (받는 사람 공유 창고 9).`],
+    ['숙제 · 업적 · 칭호', `채팅 창 [숙제] 버튼.
+
+· 오늘의 숙제 3개, 이번 주 숙제 3개 — 보상은 룬·정수 (재료 탭으로)
+· 업적 11개 — 이루면 칭호가 생깁니다
+· 고른 칭호는 채팅 이름 앞에 붙고, 칭호마다 옵션이 있습니다 (고른 칭호 하나만 적용)`],
+  ];
+  const open = () => {
+    if (document.getElementById('__guide')) return document.getElementById('__guide').remove();
+    const wrap = document.createElement('div');
+    wrap.id = '__guide';
+    wrap.style.cssText = 'position:fixed;inset:0;z-index:100003;background:rgb(0 0 0/.6);display:flex;align-items:center;justify-content:center;font:14px sans-serif;color:#c8b27a';
+    const panel = document.createElement('div');
+    panel.style.cssText = 'width:min(900px,94vw);height:min(620px,88vh);display:flex;flex-direction:column;padding:16px 20px;box-sizing:border-box;background:radial-gradient(ellipse at top,#231d12,#0a0806 70%);border:3px ridge #8a6d3b;box-shadow:0 0 0 2px #000,0 0 40px #000';
+    panel.innerHTML = '<div style="font:bold 26px Cinzel,serif;color:#d8b860;text-align:center;letter-spacing:3px;text-shadow:0 0 10px #a60,0 2px 0 #000">REMOD 안내서 <span style="font:12px sans-serif;color:#887">(J 닫기)</span></div>';
+    const body = document.createElement('div');
+    body.style.cssText = 'flex:1;display:flex;gap:14px;margin-top:12px;min-height:0';
+    const menu = document.createElement('div');
+    menu.style.cssText = 'width:170px;display:flex;flex-direction:column;gap:4px';
+    const text = document.createElement('div');
+    text.style.cssText = 'flex:1;overflow-y:auto;white-space:pre-line;line-height:1.7;padding:10px 14px;border:2px solid #5a4a2a;background:#0008;color:#ddd';
+    const show = (i) => {
+      text.innerHTML = `<div style="font:bold 18px Cinzel,serif;color:#d8b860;margin-bottom:6px">${PAGES[i][0]}</div>` + PAGES[i][1].replace(/■ ([^\n]+)/g, '<b style="color:#ffd27a">■ $1</b>');
+      [...menu.children].forEach((b, j) => { b.style.background = j === i ? '#3a3020' : '#151209'; b.style.color = j === i ? '#fff' : '#c8b27a'; });
+    };
+    PAGES.forEach(([t], i) => { const b = document.createElement('button'); b.textContent = t; b.style.cssText = 'text-align:left;padding:7px 10px;font:14px sans-serif;border:1px solid #5a4a2a;cursor:pointer'; b.onclick = () => show(i); menu.append(b); });
+    body.append(menu, text);
+    panel.append(body);
+    wrap.append(panel);
+    wrap.onclick = (e) => { if (e.target === wrap) wrap.remove(); };
+    document.body.append(wrap);
+    show(0);
+  };
+  globalThis.__remodGuide = open;
+  document.addEventListener('keydown', (e) => {
+    if (e.code !== 'KeyJ' || /^(INPUT|TEXTAREA)$/.test(e.target?.tagName)) return;
+    e.preventDefault(); e.stopPropagation(); open();
+  }, true);
+  // 처음 한 번 자동으로
+  const first = setInterval(() => {
+    if (!document.body || !globalThis.__gm?.save) return;
+    clearInterval(first);
+    try { if (localStorage.getItem('__guideSeen')) return; localStorage.setItem('__guideSeen', '1'); } catch { return; }
+    setTimeout(open, 1500);
+  }, 1000);
+})();

@@ -1,0 +1,194 @@
+{
+ "item_armor_percent": [
+  10,
+  200
+ ],
+ "armorclass": [
+  1,
+  100
+ ],
+ "magic_damage_reduction": [
+  1,
+  10
+ ],
+ "item_damagetomana": [
+  7,
+  12
+ ],
+ "staminarecoverybonus": [
+  10,
+  50
+ ],
+ "maxstamina": [
+  4,
+  50
+ ],
+ "tohit": [
+  2,
+  450
+ ],
+ "item_howl": [
+  16,
+  128
+ ],
+ "item_magicbonus": [
+  1,
+  35
+ ],
+ "maxmana": [
+  1,
+  120
+ ],
+ "fireresist": [
+  3,
+  40
+ ],
+ "coldresist": [
+  3,
+  40
+ ],
+ "lightresist": [
+  3,
+  40
+ ],
+ "poisonresist": [
+  3,
+  40
+ ],
+ "item_manaafterkill": [
+  1,
+  5
+ ],
+ "item_demon_tohit": [
+  25,
+  400
+ ],
+ "item_demondamage_percent": [
+  10,
+  300
+ ],
+ "coldmindam": [
+  1,
+  45
+ ],
+ "coldmaxdam": [
+  1,
+  140
+ ],
+ "firemindam": [
+  1,
+  170
+ ],
+ "firemaxdam": [
+  2,
+  240
+ ],
+ "lightmindam": [
+  1,
+  6
+ ],
+ "lightmaxdam": [
+  2,
+  480
+ ],
+ "item_undead_tohit": [
+  25,
+  450
+ ],
+ "item_undeaddamage_percent": [
+  25,
+  350
+ ],
+ "normal_damage_reduction": [
+  1,
+  25
+ ],
+ "item_attackertakesdamage": [
+  1,
+  20
+ ],
+ "item_fasterattackrate": [
+  10,
+  40
+ ],
+ "toblock": [
+  10,
+  20
+ ],
+ "item_fastercastrate": [
+  10,
+  20
+ ],
+ "poisonmindam": [
+  8,
+  32
+ ],
+ "poisonmaxdam": [
+  24,
+  72
+ ],
+ "dexterity": [
+  1,
+  30
+ ],
+ "item_fastergethitrate": [
+  5,
+  24
+ ],
+ "hpregen": [
+  1,
+  15
+ ],
+ "item_goldbonus": [
+  5,
+  120
+ ],
+ "maxhp": [
+  1,
+  100
+ ],
+ "lifedrainmindam": [
+  2,
+  10
+ ],
+ "manadrainmindam": [
+  2,
+  12
+ ],
+ "item_poisonlengthresist": [
+  25,
+  75
+ ],
+ "strength": [
+  1,
+  30
+ ],
+ "item_fastermovevelocity": [
+  3,
+  40
+ ],
+ "item_absorbfire": [
+  1,
+  8
+ ],
+ "item_absorblight": [
+  1,
+  8
+ ],
+ "item_absorbcold": [
+  1,
+  8
+ ],
+ "item_fasterblockrate": [
+  15,
+  30
+ ],
+ "energy": [
+  1,
+  30
+ ],
+ "item_tohit_percent": [
+  5,
+  5
+ ]
+}
