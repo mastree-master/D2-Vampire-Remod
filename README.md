@@ -1,4 +1,4 @@
-# D2S Remod
+# D2 Vampire Remod
 
 D2 Survivors 를 바탕으로 한 팬 리모드입니다. 원작 게임·D2S-MyPatch 와 따로 설치되고, 따로 세이브·따로 실행됩니다.
 

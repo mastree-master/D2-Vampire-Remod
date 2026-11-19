@@ -3,26 +3,26 @@ set "D2SF=%~f0"
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=[IO.File]::ReadAllText($env:D2SF,[Text.Encoding]::UTF8); & ([scriptblock]::Create($s.Substring($s.IndexOf('#PS'+'START')))) '%~1'"
 exit /b
 #PSSTART
-# D2S Remod 설치·업데이트: 원작 게임을 따로 복사하고 GitHub 의 최신 리모드를 입혀 "D2S Remod" 로 실행한다. 원작 게임·세이브는 건드리지 않는다
+# D2 Vampire Remod 설치·업데이트: 원작 게임을 따로 복사하고 GitHub 의 최신 리모드를 입혀 "D2 Vampire Remod" 로 실행한다. 원작 게임·세이브는 건드리지 않는다
 param([string]$Mode)
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
-$Repo = 'mastree-master/D2S-Remod'
-$Home2 = Join-Path $env:LOCALAPPDATA 'D2S-Remod'
+$Repo = 'mastree-master/D2-Vampire-Remod'
+$Home2 = Join-Path $env:LOCALAPPDATA 'D2-Vampire-Remod'
 $Src = Join-Path $Home2 'src'
 $Game = Join-Path $Home2 'game'
-function Msg($t, $icon = 'Information') { [void][Windows.Forms.MessageBox]::Show($t, 'D2S Remod', 'OK', $icon) }
+function Msg($t, $icon = 'Information') { [void][Windows.Forms.MessageBox]::Show($t, 'D2 Vampire Remod', 'OK', $icon) }
 function Fail($t) { Msg $t 'Error'; exit 1 }
 New-Item -ItemType Directory -Force $Home2 | Out-Null
 
 # 1. 리모드가 켜져 있으면 끝날 때까지 기다린다(업데이트 버튼은 게임을 끄고 이 파일을 부른다)
-for ($i = 0; $i -lt 30 -and (Get-Process 'D2S Remod' -ErrorAction SilentlyContinue); $i++) { Start-Sleep 1 }
-Get-Process 'D2S Remod' -ErrorAction SilentlyContinue | Stop-Process -Force
+for ($i = 0; $i -lt 30 -and (Get-Process 'D2 Vampire Remod' -ErrorAction SilentlyContinue); $i++) { Start-Sleep 1 }
+Get-Process 'D2 Vampire Remod' -ErrorAction SilentlyContinue | Stop-Process -Force
 
 # 2. 최신 버전 확인. 업데이트 모드인데 이미 최신이면 바로 실행
 $have = if (Test-Path "$Home2\version.txt") { (Get-Content "$Home2\version.txt" -Raw).Trim().TrimStart([char]0xFEFF) } else { '' }
 try { $latest = (Invoke-WebRequest "https://raw.githubusercontent.com/$Repo/main/version.txt" -UseBasicParsing).Content.Trim() } catch { Fail "GitHub 에 연결하지 못했습니다.`n$($_.Exception.Message)" }
-if ($Mode -eq 'update' -and $have -eq $latest -and (Test-Path "$Game\D2S Remod.exe")) { Start-Process "$Game\D2S Remod.exe"; exit 0 }
+if ($Mode -eq 'update' -and $have -eq $latest -and (Test-Path "$Game\D2 Vampire Remod.exe")) { Start-Process "$Game\D2 Vampire Remod.exe"; exit 0 }
 
 # 3. 원작 게임 폴더
 $Orig = Join-Path $env:LOCALAPPDATA 'Programs\D2 Survivors'
@@ -34,7 +34,7 @@ if (-not (Test-Path "$Orig\resources\app.asar")) {
 }
 
 # 4. 최신 리모드 받기
-$tmp = Join-Path $env:TEMP "d2s-remod-dl"
+$tmp = Join-Path $env:TEMP "d2-vampire-remod-dl"
 Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force $tmp | Out-Null
 try {
@@ -57,14 +57,14 @@ $env:ELECTRON_RUN_AS_NODE = '1'; $env:D2S_REMOD_GAME = $Game; $env:D2S_MYPATCH =
 $log = Join-Path $Home2 'build.log'
 $p = Start-Process "$Game\D2 Survivors.exe" -ArgumentList "`"$Src\tools\build.cjs`"" -WorkingDirectory $Src -NoNewWindow -Wait -PassThru -RedirectStandardOutput $log -RedirectStandardError "$log.err"
 Remove-Item env:ELECTRON_RUN_AS_NODE
-if ($p.ExitCode -ne 0 -or -not (Test-Path "$Game\D2S Remod.exe")) { Fail "리모드 적용에 실패했습니다. 기록: $log.err" }
+if ($p.ExitCode -ne 0 -or -not (Test-Path "$Game\D2 Vampire Remod.exe")) { Fail "리모드 적용에 실패했습니다. 기록: $log.err" }
 
 # 7. 바로가기·버전·이 파일 보관(게임 안 업데이트 버튼이 부름)
 $ws = New-Object -ComObject WScript.Shell
-$lnk = $ws.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Desktop')) 'D2S Remod.lnk'))
-$lnk.TargetPath = "$Game\D2S Remod.exe"; $lnk.WorkingDirectory = $Game; $lnk.Save()
+$lnk = $ws.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Desktop')) 'D2 Vampire Remod.lnk'))
+$lnk.TargetPath = "$Game\D2 Vampire Remod.exe"; $lnk.WorkingDirectory = $Game; $lnk.Save()
 [IO.File]::WriteAllText("$Home2\version.txt", $latest)
-Copy-Item "$Src\D2S-Remod.bat" (Join-Path $Home2 'D2S-Remod.bat') -Force -ErrorAction SilentlyContinue
+Copy-Item "$Src\D2-Vampire-Remod.bat" (Join-Path $Home2 'D2-Vampire-Remod.bat') -Force -ErrorAction SilentlyContinue
 
-if ($Mode -ne 'update') { Msg "D2S Remod v$latest 설치를 마쳤습니다.`n바탕화면의 'D2S Remod' 로 실행하세요.`n(원작 게임·세이브와 따로 실행됩니다)" }
-Start-Process "$Game\D2S Remod.exe"
+if ($Mode -ne 'update') { Msg "D2 Vampire Remod v$latest 설치를 마쳤습니다.`n바탕화면의 'D2 Vampire Remod' 로 실행하세요.`n(원작 게임·세이브와 따로 실행됩니다)" }
+Start-Process "$Game\D2 Vampire Remod.exe"

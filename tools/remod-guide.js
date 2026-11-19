@@ -1,7 +1,7 @@
 // 리모드 안내서: 처음 켜면 한 번 자동으로 뜨고, 이후에는 채팅 창 [?] 옆 또는 J 키로 연다. 왼쪽 목차를 누르면 오른쪽에 설명
 (() => {
   const PAGES = [
-    ['처음 시작', `REMOD 에 오신 걸 환영합니다! 원작 D2 Survivors 에 새 아이템·창고·멀티플레이·도전 콘텐츠를 더한 리모드입니다.
+    ['처음 시작', `D2 Vampire Remod 에 오신 걸 환영합니다! D2 Survivors 를 바탕으로 새 아이템·창고·멀티플레이·도전 콘텐츠를 더한 리모드입니다.
 
 ■ 꼭 알아 둘 단축키
 · J — 이 안내서
@@ -84,7 +84,7 @@
     wrap.style.cssText = 'position:fixed;inset:0;z-index:100003;background:rgb(0 0 0/.6);display:flex;align-items:center;justify-content:center;font:14px sans-serif;color:#c8b27a';
     const panel = document.createElement('div');
     panel.style.cssText = 'width:min(900px,94vw);height:min(620px,88vh);display:flex;flex-direction:column;padding:16px 20px;box-sizing:border-box;background:radial-gradient(ellipse at top,#231d12,#0a0806 70%);border:3px ridge #8a6d3b;box-shadow:0 0 0 2px #000,0 0 40px #000';
-    panel.innerHTML = '<div style="font:bold 26px Cinzel,serif;color:#d8b860;text-align:center;letter-spacing:3px;text-shadow:0 0 10px #a60,0 2px 0 #000">REMOD 안내서 <span style="font:12px sans-serif;color:#887">(J 닫기)</span></div>';
+    panel.innerHTML = '<div style="font:bold 26px Cinzel,serif;color:#d8b860;text-align:center;letter-spacing:3px;text-shadow:0 0 10px #a60,0 2px 0 #000">Vampire Remod 안내서 <span style="font:12px sans-serif;color:#887">(J 닫기)</span></div>';
     const body = document.createElement('div');
     body.style.cssText = 'flex:1;display:flex;gap:14px;margin-top:12px;min-height:0';
     const menu = document.createElement('div');

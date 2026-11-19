@@ -10,4 +10,4 @@ if errorlevel 1 (
 start "D2S Remod Server" /min node server\server.cjs
 set D2S_USER_DATA=%~dp0save
 set D2S_LEADERBOARD_URL=http://127.0.0.1:8520
-start "" "game\D2S Remod.exe" --remote-debugging-port=9333
+start "" "game\D2 Vampire Remod.exe" --remote-debugging-port=9333

@@ -10,7 +10,7 @@ const ROOT = path.join(__dirname, '..');
 const GAME = process.env.D2S_REMOD_GAME || path.join(ROOT, 'game');
 const OUT = path.join(GAME, 'resources', 'app.asar');
 // 게임이 켜진 채로 app.asar 를 바꾸면 게임이 망가질 수 있다
-if (execSync('tasklist /FO CSV /NH').toString().split('\n').some((l) => /^"(D2 Survivors|D2S Remod)\.exe"/.test(l) && +l.split('","')[1] !== process.pid)) { /* 빌드를 게임 실행 파일로 돌릴 때 자기 자신은 빼고 */ console.error('게임이 켜져 있어 빌드하지 않습니다. 게임을 끄고 다시 실행하세요.'); process.exit(1); }
+if (execSync('tasklist /FO CSV /NH').toString().split('\n').some((l) => /^"(D2 Survivors|D2 Vampire Remod)\.exe"/.test(l) && +l.split('","')[1] !== process.pid)) { /* 빌드를 게임 실행 파일로 돌릴 때 자기 자신은 빼고 */ console.error('게임이 켜져 있어 빌드하지 않습니다. 게임을 끄고 다시 실행하세요.'); process.exit(1); }
 const work = fs.mkdtempSync(path.join(os.tmpdir(), 'd2s-remod-'));
 const ASAR = require('./asar-lite.cjs'); // npx 없이 풀고 묶기(사용자 PC 에 Node 가 없어도 됨)
 
@@ -85,15 +85,15 @@ const PATCHES = [
   // 리모드 아이템 그림: 같은 종류(무기 종류·부위) 원작 유니크/세트 그림 중 이름으로 고정해서 하나 고른다. 원래는 베이스 그림
   ['saveTransfer', 'let m=e=>({url:tn(e.file),width:e.width,height:e.height}),h=Object.entries(e.uniques)', 'let PK=(L,src,T)=>{let kd=b=>{let q=Bq.get(b);return q?q.kind??q.type:``};for(let[n,b]of L){if(T[n])continue;let c=Object.keys(src).filter(k=>!__rs.has(k)&&kd((GJ.find(g=>g.name===k)??qK.find(g=>g.name===k))?.base)===kd(b));if(!c.length)continue;let x=0;for(let ch of n)x=x*31+ch.charCodeAt(0)>>>0;T[n]=src[c[x%c.length]]}};PK(__reim.drops,e.uniques,e.uniques),e.sets&&PK(__reim.setDrops.map(([a,,b])=>[a,b]),{...e.sets,...e.uniques},e.sets);let m=e=>({url:tn(e.file),width:e.width,height:e.height}),h=Object.entries(e.uniques)'],
   // 메인 화면 로고: SURVIVORS 아래 오른쪽에 불꽃색 REMOD 글자(살짝 일렁임). 창 제목도 D2 Survivors REMOD
-  ['screens', 'e.restore(),e.drawImage(o,s,c)}function Xt(', 'e.restore(),e.drawImage(o,s,c);{let x=It.x+168,y=It.y+44,f=.85+.15*Math.sin(t*3.1)*Math.sin(t*1.3);e.save(),e.translate(x,y),e.rotate(-.12),x=0,y=0,e.font=`bold 24px Cinzel, serif`,e.textAlign=`right`,e.textBaseline=`middle`,e.lineJoin=`round`;let g=e.createLinearGradient(0,y-15,0,y+15);g.addColorStop(0,`#fff2b0`),g.addColorStop(.45,`#ffb030`),g.addColorStop(1,`#b02a00`),e.shadowColor=`rgba(255,110,0,${.9*f})`,e.shadowBlur=18*f,e.lineWidth=5,e.strokeStyle=`#1a0800`,e.strokeText(`REMOD`,x,y),e.fillStyle=g,e.fillText(`REMOD`,x,y),e.restore()}}function Xt('],
+  ['screens', 'e.restore(),e.drawImage(o,s,c)}function Xt(', 'e.restore(),e.drawImage(o,s,c);{e.save();{let f2=.8+.2*Math.sin(t*2.3),g2=e.createLinearGradient(0,It.y-34,0,It.y+30);g2.addColorStop(0,`#ffb0a0`),g2.addColorStop(.35,`#e0201a`),g2.addColorStop(.75,`#7a0008`),g2.addColorStop(1,`#2a0004`),e.font=`bold 66px Cinzel, serif`,e.letterSpacing=`8px`,e.textAlign=`center`,e.textBaseline=`middle`,e.lineJoin=`round`,e.shadowColor=`rgba(200,0,0,${.8*f2})`,e.shadowBlur=26*f2,e.lineWidth=7,e.strokeStyle=`#120002`,e.strokeText(`VAMPIRE`,It.x,It.y),e.shadowBlur=0,e.fillStyle=g2,e.fillText(`VAMPIRE`,It.x,It.y),e.globalAlpha=.35,e.lineWidth=1.5,e.strokeStyle=`#ffd0c0`,e.strokeText(`VAMPIRE`,It.x,It.y-1)}e.restore();let x=It.x+168,y=It.y+44,f=.85+.15*Math.sin(t*3.1)*Math.sin(t*1.3);e.save(),e.translate(x,y),e.rotate(-.12),x=0,y=0,e.font=`bold 24px Cinzel, serif`,e.textAlign=`right`,e.textBaseline=`middle`,e.lineJoin=`round`;let g=e.createLinearGradient(0,y-15,0,y+15);g.addColorStop(0,`#fff2b0`),g.addColorStop(.45,`#ffb030`),g.addColorStop(1,`#b02a00`),e.shadowColor=`rgba(255,110,0,${.9*f})`,e.shadowBlur=18*f,e.lineWidth=5,e.strokeStyle=`#1a0800`,e.strokeText(`REMOD`,x,y),e.fillStyle=g,e.fillText(`REMOD`,x,y),e.restore()}}function Xt('],
   // 메인 로고 글자: SURVIVORS 대신 VAMPIRE (뱀파이어 리모드)
-  ['screens', 'var Ft=`SURVIVORS`,', 'var Ft=`VAMPIRE`,'],
+  ['screens', 'var Ft=`SURVIVORS`,', 'var Ft=` `,'],
   // 메인 메뉴 버튼을 18 내려서 REMOD 글자와 안 겹치게
   ['screens', 'd=u.map((e,t)=>290+t*40+', 'd=u.map((e,t)=>318+t*40+'],
   // 리모드는 따로 된 게임: 환경변수 없이 켜도 원본 세이브·공식 서버를 쓰지 않게 기본값을 리모드 것으로
-  ['main', '^', 'process.env.D2S_USER_DATA ||= require("node:path").join(process.env.APPDATA || "", "D2S-Remod"); process.env.D2S_LEADERBOARD_URL ||= "http://127.0.0.1:8520";'],
-  ['main', 'title: "D2 Survivors"', 'title: "D2 Vampire REMOD"'],
-  ['Game', '^', 'setInterval(()=>{document.title!==`D2 Vampire REMOD`&&(document.title=`D2 Vampire REMOD`)},1e3);'],
+  ['main', '^', 'process.env.D2S_USER_DATA ||= require("node:path").join(process.env.APPDATA || "", "D2-Vampire-Remod"); process.env.D2S_LEADERBOARD_URL ||= "http://127.0.0.1:8520";'],
+  ['main', 'title: "D2 Survivors"', 'title: "D2 Vampire Remod"'],
+  ['Game', '^', 'setInterval(()=>{document.title!==`D2 Vampire Remod`&&(document.title=`D2 Vampire Remod`)},1e3);'],
   // 리모드 전용 쥬얼 옵션을 원작 쥬얼 옵션 표(CJe) 끝에 더한다. 끝에는 직업별 스킬 탭 +1 (거대 부적 스킬러와 같은 이름·방식, 매직 전용, 레벨 60). 오색의(Iridescent)는 모든 저항(원작 Shimmering 과 같은 방식)
   ['saveTransfer', '...wJe()]}', '...wJe(),' + JEWELS.map(([k, s, g, n, , l, r, f, a, b]) => `...q(\`${k}\`,\`${s}\`,${g},[[${JSON.stringify(n)},${l},${r},${f},${a},${b},e]])${n === 'Iridescent' ? '.map(e=>TJ(e,{alike:[`lightningResist`,`coldResist`,`poisonResist`]}))' : ''}`).join(',') + ',...Object.keys(Ni).flatMap(e=>zi.map(t=>({name:Ni[e].trees[t-1].affixes[0],kind:`prefix`,stat:Fi(e,t),min:1,max:1,level:0,rows:dJ(`jewl`),d2:{level:60,req:50,frequency:1,group:213,skiller:!0,...K}}))),...' + JSON.stringify(SKILLS.map(([id, n]) => [id, n])) + '.map(([i,n])=>({name:`of ${n}`,kind:`suffix`,stat:`skill:${i}`,min:1,max:2,level:0,rows:dJ(`jewl`),d2:{level:65,req:50,frequency:.05,group:300,...K}}))]}'],
   // 쥬얼 수치 검사(bqe 최대값 표)에 리모드 쥬얼 최대값을 더한다. 없으면 "인정 안 됨: 범위를 넘는 수치"
@@ -244,18 +244,18 @@ const PATCHES = [
   ['Game', '__plogF="1.65', '__plogF=__remodLog||"1.65'],
   ['Game', 'w.textContent=globalThis.__papp+`\\n\\n`+(d?', 'w.textContent=(d?'],
   ['Game', '패치 기록 v1.69 (F10 닫기)', 'REMOD 패치 기록 v${__remodVer} (F10 닫기)'],
-  ['Game', 'D2S v1.69</span>', 'D2 VAMPIRE REMOD v${__remodVer}</span>'],
+  ['Game', 'D2S v1.69</span>', 'D2 Vampire Remod v${__remodVer}</span>'],
   // 레어 아이템(부적 빼고)은 15% 확률로 지금 직업의 단일 스킬 +1~2 가 하나 더 붙는다
   ['saveTransfer', 'function cY(e,t,n,r,i,a=2){t===`normal`', 'function cY(e,t,n,r,i,a=2){let __x=__cY0(e,t,n,r,i,a);__x?.type===`jewel`&&__x.mods?.forEach(m=>/^skill:/.test(m.stat)&&(m.staff=!0));if(__x?.rarity===`rare`&&__x.type!==`charm`&&Math.random()<.15&&!__x.mods?.some(m=>m.stat.startsWith(`skill:`))){let c=globalThis.__gm?.world?.player?.cls,L=' + JSON.stringify(Object.fromEntries(['amazon','sorceress','necromancer','assassin','barbarian','paladin','druid'].map((c) => [c, SKILLS.filter((k) => k[3] === c).map((k) => k[0])]))) + ',l=L[c]??Object.values(L)[Math.floor(Math.random()*7)];__x.mods=[...__x.mods??[],{stat:`skill:${l[Math.floor(Math.random()*l.length)]}`,value:1+(Math.random()<.3),staff:!0}]}return __x}function __cY0(e,t,n,r,i,a=2){t===`normal`'],
   // 위 레어 단일 스킬 옵션은 검사(인정 안 됨)에서 빼고 본다
   ['saveTransfer', 'function f2(e){if(e.type===`quest`)return null;', 'function f2(e){if(e.type===`quest`)return null;if((e.rarity===`rare`||e.type===`jewel`)&&e.type!==`charm`&&e.mods?.some(m=>m.staff&&/^skill:/.test(m.stat)&&m.value<=2))return f2({...e,mods:e.mods.filter(m=>!(m.staff&&/^skill:/.test(m.stat)&&m.value<=2))});'],
   ['saveTransfer', 'function m2(e){let t=', 'globalThis.__m2=e=>f2(e);function m2(e){let t='],
-  // 업데이트: 게임 안 [업데이트 하기] → 설치 폴더의 D2S-Remod.bat update 를 띄우고 게임을 끈다. 최신 버전은 GitHub version.txt
+  // 업데이트: 게임 안 [업데이트 하기] → 설치 폴더의 D2-Vampire-Remod.bat update 를 띄우고 게임을 끈다. 최신 버전은 GitHub version.txt
   ['preload', 'quit: () => import_electron.ipcRenderer.invoke("app:quit"),', 'quit: () => import_electron.ipcRenderer.invoke("app:quit"), remodUpdate: () => import_electron.ipcRenderer.invoke("remod:update"), remodLatest: () => import_electron.ipcRenderer.invoke("remod:latest"),'],
-  ['main', '  import_electron4.ipcMain.handle("app:full-screen", (event) => {', `  import_electron4.ipcMain.handle("remod:latest", async () => { try { const r = await fetch("https://raw.githubusercontent.com/mastree-master/D2S-Remod/main/version.txt", { cache: "no-store", signal: AbortSignal.timeout(8e3) }); return r.ok ? (await r.text()).trim() : null; } catch { return null; } });
+  ['main', '  import_electron4.ipcMain.handle("app:full-screen", (event) => {', `  import_electron4.ipcMain.handle("remod:latest", async () => { try { const r = await fetch("https://raw.githubusercontent.com/mastree-master/D2-Vampire-Remod/main/version.txt", { cache: "no-store", signal: AbortSignal.timeout(8e3) }); return r.ok ? (await r.text()).trim() : null; } catch { return null; } });
   import_electron4.ipcMain.handle("remod:update", (event) => {
     if (!event.senderFrame?.url.startsWith("app://game/")) throw new Error("Not the game page");
-    const bat = require("node:path").join(process.env.LOCALAPPDATA || "", "D2S-Remod", "D2S-Remod.bat");
+    const bat = require("node:path").join(process.env.LOCALAPPDATA || "", "D2-Vampire-Remod", "D2-Vampire-Remod.bat");
     if (!require("node:fs").existsSync(bat)) return false;
     require("node:child_process").spawn("cmd.exe", ["/c", "start", "", bat, "update"], { detached: true, stdio: "ignore", windowsHide: true }).unref();
     setTimeout(() => import_electron4.app.quit(), 300);
@@ -264,6 +264,9 @@ const PATCHES = [
   import_electron4.ipcMain.handle("app:full-screen", (event) => {`],
   // 메인 화면 오른쪽 위: 원작 웹사이트·디스코드 버튼은 빼고 [새 소식](리모드 기록)만
   ['screens', 'w=()=>[S,x,...e.news?[b]:[]];', 'w=()=>[...e.news?[b]:[]];'],
+  // 빌드 표시: 메인 화면 왼쪽 아래와 위쪽 표시줄을 리모드 버전으로(원작 빌드 번호 대신)
+  ['screens', 't.print(r,m,8,572', 't.print(r,`D2 Vampire Remod · 빌드 ${globalThis.__remodVer??""}`,8,572'],
+  ['Game', '<span style="color:#999">(게임 빌드 2026.1105.3)</span>', '<span style="color:#999">(빌드 ${__remodVer})</span>'],
   // 새 옵션이 붙었을 때 강화 결과 문구
   ['Game', 'return{text:n?`${zI} ${n.text}`:zI,', 'return{text:n?`${zI} ${n.text}`:u.line===`new`?`${zI} 새 옵션이 붙었습니다`:zI,'],
 ];
@@ -285,7 +288,7 @@ for (const [prefix, find, replace] of PATCHES) {
 }
 ASAR.pack(unpacked, OUT, OUT);
 // 실행 파일도 리모드 이름으로(원작 실행 파일과 따로 보이게)
-fs.copyFileSync(path.join(GAME, 'D2 Survivors.exe'), path.join(GAME, 'D2S Remod.exe'));
+fs.copyFileSync(path.join(GAME, 'D2 Survivors.exe'), path.join(GAME, 'D2 Vampire Remod.exe'));
 const hash = require('node:crypto').createHash('sha256').update(fs.readFileSync(OUT)).digest('hex');
 fs.writeFileSync(path.join(path.dirname(OUT), 'app.asar.sha256'), hash);
 fs.rmSync(work, { recursive: true, force: true });
