@@ -85,13 +85,15 @@ const PATCHES = [
   // 리모드 아이템 그림: 같은 종류(무기 종류·부위) 원작 유니크/세트 그림 중 이름으로 고정해서 하나 고른다. 원래는 베이스 그림
   ['saveTransfer', 'let m=e=>({url:tn(e.file),width:e.width,height:e.height}),h=Object.entries(e.uniques)', 'let PK=(L,src,T)=>{let kd=b=>{let q=Bq.get(b);return q?q.kind??q.type:``};for(let[n,b]of L){if(T[n])continue;let c=Object.keys(src).filter(k=>!__rs.has(k)&&kd((GJ.find(g=>g.name===k)??qK.find(g=>g.name===k))?.base)===kd(b));if(!c.length)continue;let x=0;for(let ch of n)x=x*31+ch.charCodeAt(0)>>>0;T[n]=src[c[x%c.length]]}};PK(__reim.drops,e.uniques,e.uniques),e.sets&&PK(__reim.setDrops.map(([a,,b])=>[a,b]),{...e.sets,...e.uniques},e.sets);let m=e=>({url:tn(e.file),width:e.width,height:e.height}),h=Object.entries(e.uniques)'],
   // 메인 화면 로고: SURVIVORS 아래 오른쪽에 불꽃색 REMOD 글자(살짝 일렁임). 창 제목도 D2 Survivors REMOD
-  ['screens', 'e.restore(),e.drawImage(o,s,c)}function Xt(', 'e.restore(),e.drawImage(o,s,c);{let x=It.x+168,y=It.y+30,f=.85+.15*Math.sin(t*3.1)*Math.sin(t*1.3);e.save(),e.translate(x,y),e.rotate(-.12),x=0,y=0,e.font=`bold 24px Cinzel, serif`,e.textAlign=`right`,e.textBaseline=`middle`,e.lineJoin=`round`;let g=e.createLinearGradient(0,y-15,0,y+15);g.addColorStop(0,`#fff2b0`),g.addColorStop(.45,`#ffb030`),g.addColorStop(1,`#b02a00`),e.shadowColor=`rgba(255,110,0,${.9*f})`,e.shadowBlur=18*f,e.lineWidth=5,e.strokeStyle=`#1a0800`,e.strokeText(`REMOD`,x,y),e.fillStyle=g,e.fillText(`REMOD`,x,y),e.restore()}}function Xt('],
+  ['screens', 'e.restore(),e.drawImage(o,s,c)}function Xt(', 'e.restore(),e.drawImage(o,s,c);{let x=It.x+168,y=It.y+44,f=.85+.15*Math.sin(t*3.1)*Math.sin(t*1.3);e.save(),e.translate(x,y),e.rotate(-.12),x=0,y=0,e.font=`bold 24px Cinzel, serif`,e.textAlign=`right`,e.textBaseline=`middle`,e.lineJoin=`round`;let g=e.createLinearGradient(0,y-15,0,y+15);g.addColorStop(0,`#fff2b0`),g.addColorStop(.45,`#ffb030`),g.addColorStop(1,`#b02a00`),e.shadowColor=`rgba(255,110,0,${.9*f})`,e.shadowBlur=18*f,e.lineWidth=5,e.strokeStyle=`#1a0800`,e.strokeText(`REMOD`,x,y),e.fillStyle=g,e.fillText(`REMOD`,x,y),e.restore()}}function Xt('],
+  // 메인 로고 글자: SURVIVORS 대신 VAMPIRE (뱀파이어 리모드)
+  ['screens', 'var Ft=`SURVIVORS`,', 'var Ft=`VAMPIRE`,'],
   // 메인 메뉴 버튼을 18 내려서 REMOD 글자와 안 겹치게
-  ['screens', 'd=u.map((e,t)=>290+t*40+', 'd=u.map((e,t)=>308+t*40+'],
+  ['screens', 'd=u.map((e,t)=>290+t*40+', 'd=u.map((e,t)=>318+t*40+'],
   // 리모드는 따로 된 게임: 환경변수 없이 켜도 원본 세이브·공식 서버를 쓰지 않게 기본값을 리모드 것으로
   ['main', '^', 'process.env.D2S_USER_DATA ||= require("node:path").join(process.env.APPDATA || "", "D2S-Remod"); process.env.D2S_LEADERBOARD_URL ||= "http://127.0.0.1:8520";'],
-  ['main', 'title: "D2 Survivors"', 'title: "D2 Survivors REMOD"'],
-  ['Game', '^', 'setInterval(()=>{document.title!==`D2 Survivors REMOD`&&(document.title=`D2 Survivors REMOD`)},1e3);'],
+  ['main', 'title: "D2 Survivors"', 'title: "D2 Vampire REMOD"'],
+  ['Game', '^', 'setInterval(()=>{document.title!==`D2 Vampire REMOD`&&(document.title=`D2 Vampire REMOD`)},1e3);'],
   // 리모드 전용 쥬얼 옵션을 원작 쥬얼 옵션 표(CJe) 끝에 더한다. 끝에는 직업별 스킬 탭 +1 (거대 부적 스킬러와 같은 이름·방식, 매직 전용, 레벨 60). 오색의(Iridescent)는 모든 저항(원작 Shimmering 과 같은 방식)
   ['saveTransfer', '...wJe()]}', '...wJe(),' + JEWELS.map(([k, s, g, n, , l, r, f, a, b]) => `...q(\`${k}\`,\`${s}\`,${g},[[${JSON.stringify(n)},${l},${r},${f},${a},${b},e]])${n === 'Iridescent' ? '.map(e=>TJ(e,{alike:[`lightningResist`,`coldResist`,`poisonResist`]}))' : ''}`).join(',') + ',...Object.keys(Ni).flatMap(e=>zi.map(t=>({name:Ni[e].trees[t-1].affixes[0],kind:`prefix`,stat:Fi(e,t),min:1,max:1,level:0,rows:dJ(`jewl`),d2:{level:60,req:50,frequency:1,group:213,skiller:!0,...K}}))),...' + JSON.stringify(SKILLS.map(([id, n]) => [id, n])) + '.map(([i,n])=>({name:`of ${n}`,kind:`suffix`,stat:`skill:${i}`,min:1,max:2,level:0,rows:dJ(`jewl`),d2:{level:65,req:50,frequency:.05,group:300,...K}}))]}'],
   // 쥬얼 수치 검사(bqe 최대값 표)에 리모드 쥬얼 최대값을 더한다. 없으면 "인정 안 됨: 범위를 넘는 수치"
@@ -242,7 +244,7 @@ const PATCHES = [
   ['Game', '__plogF="1.65', '__plogF=__remodLog||"1.65'],
   ['Game', 'w.textContent=globalThis.__papp+`\\n\\n`+(d?', 'w.textContent=(d?'],
   ['Game', '패치 기록 v1.69 (F10 닫기)', 'REMOD 패치 기록 v${__remodVer} (F10 닫기)'],
-  ['Game', 'D2S v1.69</span>', 'D2S REMOD v${__remodVer}</span>'],
+  ['Game', 'D2S v1.69</span>', 'D2 VAMPIRE REMOD v${__remodVer}</span>'],
   // 레어 아이템(부적 빼고)은 15% 확률로 지금 직업의 단일 스킬 +1~2 가 하나 더 붙는다
   ['saveTransfer', 'function cY(e,t,n,r,i,a=2){t===`normal`', 'function cY(e,t,n,r,i,a=2){let __x=__cY0(e,t,n,r,i,a);__x?.type===`jewel`&&__x.mods?.forEach(m=>/^skill:/.test(m.stat)&&(m.staff=!0));if(__x?.rarity===`rare`&&__x.type!==`charm`&&Math.random()<.15&&!__x.mods?.some(m=>m.stat.startsWith(`skill:`))){let c=globalThis.__gm?.world?.player?.cls,L=' + JSON.stringify(Object.fromEntries(['amazon','sorceress','necromancer','assassin','barbarian','paladin','druid'].map((c) => [c, SKILLS.filter((k) => k[3] === c).map((k) => k[0])]))) + ',l=L[c]??Object.values(L)[Math.floor(Math.random()*7)];__x.mods=[...__x.mods??[],{stat:`skill:${l[Math.floor(Math.random()*l.length)]}`,value:1+(Math.random()<.3),staff:!0}]}return __x}function __cY0(e,t,n,r,i,a=2){t===`normal`'],
   // 위 레어 단일 스킬 옵션은 검사(인정 안 됨)에서 빼고 본다
