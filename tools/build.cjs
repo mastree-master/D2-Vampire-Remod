@@ -1,17 +1,20 @@
 // 원작 asar(tools/original.asar)에 기존 패치(D2S-MyPatch)와 Remod 수정을 입혀 game/resources/app.asar 로 만든다
+process.noAsar = true; // 게임 실행 파일(Electron)로 돌릴 때 .asar 를 폴더로 보지 않고 파일로 다루게
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
 const { execSync } = require('node:child_process');
 
 const ROOT = path.join(__dirname, '..');
-const OUT = path.join(ROOT, 'game', 'resources', 'app.asar');
+// 리모드 게임 폴더: 개발 PC 는 저장소의 game/, 사용자 PC 는 설치 bat 가 D2S_REMOD_GAME 으로 알려 준다
+const GAME = process.env.D2S_REMOD_GAME || path.join(ROOT, 'game');
+const OUT = path.join(GAME, 'resources', 'app.asar');
 // 게임이 켜진 채로 app.asar 를 바꾸면 게임이 망가질 수 있다
-if (/D2 Survivors.exe|D2S Remod.exe/.test(execSync('tasklist').toString())) { console.error('게임이 켜져 있어 빌드하지 않습니다. 게임을 끄고 다시 실행하세요.'); process.exit(1); }
+if (execSync('tasklist /FO CSV /NH').toString().split('\n').some((l) => /^"(D2 Survivors|D2S Remod)\.exe"/.test(l) && +l.split('","')[1] !== process.pid)) { /* 빌드를 게임 실행 파일로 돌릴 때 자기 자신은 빼고 */ console.error('게임이 켜져 있어 빌드하지 않습니다. 게임을 끄고 다시 실행하세요.'); process.exit(1); }
 const work = fs.mkdtempSync(path.join(os.tmpdir(), 'd2s-remod-'));
-const asar = (args) => execSync(`npx -y @electron/asar ${args}`, { stdio: 'inherit' });
+const ASAR = require('./asar-lite.cjs'); // npx 없이 풀고 묶기(사용자 PC 에 Node 가 없어도 됨)
 
-const MYPATCH = String.raw`C:\Users\Administrator\Desktop\D2S-MyPatch-Share\D2S-MyPatch.bat`;
+const MYPATCH = process.env.D2S_MYPATCH || String.raw`C:\Users\Administrator\Desktop\D2S-MyPatch-Share\D2S-MyPatch.bat`;
 
 // 기존 패치를 임시 폴더의 원작 사본에 화면 없이 적용한다. APPDATA 도 임시 폴더로 돌려 실제 설정은 건드리지 않는다
 // 패처는 $env:D2SF 가 있으면 감시 작업(작업 스케줄러 D2S-MyPatch-Watch)을 만들거나 지운다. 스크립트를 읽은 뒤 D2SF 를 지워서 막는다
@@ -245,12 +248,26 @@ const PATCHES = [
   // 위 레어 단일 스킬 옵션은 검사(인정 안 됨)에서 빼고 본다
   ['saveTransfer', 'function f2(e){if(e.type===`quest`)return null;', 'function f2(e){if(e.type===`quest`)return null;if((e.rarity===`rare`||e.type===`jewel`)&&e.type!==`charm`&&e.mods?.some(m=>m.staff&&/^skill:/.test(m.stat)&&m.value<=2))return f2({...e,mods:e.mods.filter(m=>!(m.staff&&/^skill:/.test(m.stat)&&m.value<=2))});'],
   ['saveTransfer', 'function m2(e){let t=', 'globalThis.__m2=e=>f2(e);function m2(e){let t='],
+  // 업데이트: 게임 안 [업데이트 하기] → 설치 폴더의 D2S-Remod.bat update 를 띄우고 게임을 끈다. 최신 버전은 GitHub version.txt
+  ['preload', 'quit: () => import_electron.ipcRenderer.invoke("app:quit"),', 'quit: () => import_electron.ipcRenderer.invoke("app:quit"), remodUpdate: () => import_electron.ipcRenderer.invoke("remod:update"), remodLatest: () => import_electron.ipcRenderer.invoke("remod:latest"),'],
+  ['main', '  import_electron4.ipcMain.handle("app:full-screen", (event) => {', `  import_electron4.ipcMain.handle("remod:latest", async () => { try { const r = await fetch("https://raw.githubusercontent.com/mastree-master/D2S-Remod/main/version.txt", { cache: "no-store", signal: AbortSignal.timeout(8e3) }); return r.ok ? (await r.text()).trim() : null; } catch { return null; } });
+  import_electron4.ipcMain.handle("remod:update", (event) => {
+    if (!event.senderFrame?.url.startsWith("app://game/")) throw new Error("Not the game page");
+    const bat = require("node:path").join(process.env.LOCALAPPDATA || "", "D2S-Remod", "D2S-Remod.bat");
+    if (!require("node:fs").existsSync(bat)) return false;
+    require("node:child_process").spawn("cmd.exe", ["/c", "start", "", bat, "update"], { detached: true, stdio: "ignore", windowsHide: true }).unref();
+    setTimeout(() => import_electron4.app.quit(), 300);
+    return true;
+  });
+  import_electron4.ipcMain.handle("app:full-screen", (event) => {`],
+  // 메인 화면 오른쪽 위: 원작 웹사이트·디스코드 버튼은 빼고 [새 소식](리모드 기록)만
+  ['screens', 'w=()=>[S,x,...e.news?[b]:[]];', 'w=()=>[...e.news?[b]:[]];'],
   // 새 옵션이 붙었을 때 강화 결과 문구
   ['Game', 'return{text:n?`${zI} ${n.text}`:zI,', 'return{text:n?`${zI} ${n.text}`:u.line===`new`?`${zI} 새 옵션이 붙었습니다`:zI,'],
 ];
 
 const unpacked = path.join(work, 'app');
-asar(`extract "${myPatch()}" "${unpacked}"`);
+ASAR.extract(myPatch(), unpacked);
 const assets = path.join(unpacked, 'desktop', 'dist', 'web', 'assets');
 for (const [prefix, find, replace] of PATCHES) {
   const desktop = prefix === 'main' || prefix === 'preload';
@@ -264,9 +281,9 @@ for (const [prefix, find, replace] of PATCHES) {
   execSync(`node --check "${full}"`);
   console.log(`고침: ${file}`);
 }
-asar(`pack "${unpacked}" "${OUT}"`);
+ASAR.pack(unpacked, OUT, OUT);
 // 실행 파일도 리모드 이름으로(원작 실행 파일과 따로 보이게)
-fs.copyFileSync(path.join(ROOT, 'game', 'D2 Survivors.exe'), path.join(ROOT, 'game', 'D2S Remod.exe'));
+fs.copyFileSync(path.join(GAME, 'D2 Survivors.exe'), path.join(GAME, 'D2S Remod.exe'));
 const hash = require('node:crypto').createHash('sha256').update(fs.readFileSync(OUT)).digest('hex');
 fs.writeFileSync(path.join(path.dirname(OUT), 'app.asar.sha256'), hash);
 fs.rmSync(work, { recursive: true, force: true });

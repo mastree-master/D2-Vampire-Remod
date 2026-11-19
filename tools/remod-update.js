@@ -18,7 +18,7 @@
       <div style="display:flex;gap:14px;justify-content:center;margin-top:16px"><button data-u="go">업데이트 하기</button><button data-u="quit">종료</button></div><div class="msg" style="margin-top:8px;color:#ffd27a;min-height:18px"></div></div>`;
     for (const b of d.querySelectorAll("button")) b.style.cssText = "padding:7px 22px;font:bold 15px sans-serif;cursor:pointer;color:#e8d8a8;background:linear-gradient(#5a5650,#2c2a26);border:1px solid #8a6d3b";
     // 업데이트 하기: 받는 곳(url)을 연다. 없으면 안내만. 종료: 게임을 끈다
-    d.querySelector("[data-u=go]").onclick = () => { const m = d.querySelector(".msg"); if (need.url) { try { window.open(need.url, "_blank"); } catch {} m.textContent = "받는 곳을 열었습니다. 새 버전을 설치한 뒤 다시 켜 주세요."; } else m.textContent = "아직 받는 곳이 정해지지 않았습니다. 서버 관리자에게 문의하세요."; };
+    d.querySelector("[data-u=go]").onclick = () => { const m = d.querySelector(".msg"); if (globalThis.d2app?.remodUpdate) { m.textContent = "새 버전을 받는 중입니다. 잠시 뒤 게임이 꺼졌다가 다시 켜집니다..."; globalThis.d2app.remodUpdate().then((ok) => { if (!ok) m.textContent = "설치 프로그램(D2S-Remod.bat)으로 설치한 리모드에서만 자동 업데이트가 됩니다."; }); return; } if (need.url) { try { window.open(need.url, "_blank"); } catch {} m.textContent = "받는 곳을 열었습니다. 새 버전을 설치한 뒤 다시 켜 주세요."; } else m.textContent = "아직 받는 곳이 정해지지 않았습니다. 서버 관리자에게 문의하세요."; };
     d.querySelector("[data-u=quit]").onclick = () => { try { globalThis.d2app?.quit?.(); } catch {} setTimeout(() => window.close(), 300); };
     document.body.append(d);
     // 게임 조작 막기
@@ -26,8 +26,9 @@
   };
   const check = async () => {
     try {
-      const r = await globalThis.d2app?.leaderboard?.('GET', '/ver');
-      const v = JSON.parse(r?.body ?? 'null');
+      // 최신 버전: GitHub version.txt(게임 본체가 받아 옴). 못 받으면 리모드 서버(/ver)
+      const gh = await globalThis.d2app?.remodLatest?.();
+      const v = gh ? { ver: gh, note: '새 버전이 나왔습니다. [업데이트 하기]를 누르면 새 버전을 받아 설치하고 다시 켭니다.' } : JSON.parse((await globalThis.d2app?.leaderboard?.('GET', '/ver'))?.body ?? 'null');
       need = v?.ver && globalThis.__remodVer && older(globalThis.__remodVer, v.ver) ? v : null;
     } catch { /* 오프라인이면 그대로 */ }
   };
