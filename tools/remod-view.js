@@ -14,8 +14,11 @@
   let lastImg = 0, sending = false, receiving = false;
   const snap = (g) => {
     try {
-      const s = g.world.player.sprite, b = s.getLocalBounds();
-      const c = g.app.renderer.extract.canvas({ target: s });
+      // 살아 있는 캐릭터를 바로 찍으면 pixi 가 그 컨테이너를 render group 으로 바꿔 몸이 비스듬히 찢어져 그려짐 → 보이는 슬롯을 복사한 임시 컨테이너를 찍음
+      const s = g.world.player.sprite, b = s.getLocalBounds(), S = s.children[0].constructor, tmp = new (Object.getPrototypeOf(s.constructor))();
+      for (const x of s.children) if (x.visible && x.texture) { const y = new S({ texture: x.texture }); y.position.copyFrom(x.position); y.alpha = x.alpha; y.blendMode = x.blendMode; tmp.addChild(y); }
+      const c = g.app.renderer.extract.canvas({ target: tmp });
+      tmp.destroy({ children: true });
       return { img: c.toDataURL('image/webp', 0.8), ox: Math.round(b.x), oy: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height) };
     } catch { return null; }
   };
