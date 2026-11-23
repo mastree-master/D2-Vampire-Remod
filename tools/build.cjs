@@ -184,6 +184,9 @@ const PATCHES = [
   ['Game', 'autoSell(e){let t=this.world.player.cls;', 'autoSell(e){globalThis.__dis?.(this.save,e);let t=this.world.player.cls;'],
   ['Game', 'sold(e,t,n){L(this.save)', 'sold(e,t,n){globalThis.__dis?.(this.save,e);L(this.save)'],
   ['saveTransfer', 'A_={magicArrow:','A_={...' + JSON.stringify(WK_A) + ',magicArrow:'],
+  // 악마술사 인게임 몸: 장비 레이어(옛 chars/wk = 강령술사 복사본, 방향 찢어짐) 대신 HD 3D 로 뽑은 몸 그림 그대로
+  ['Game', 'r?null:rn(n,this.equippedOf(n.id))', 'r||n.id===`warlock`?null:rn(n,this.equippedOf(n.id))'],
+  ['Game', 't=await rn(this.kit,this.equippedOf(this.kit.id))', 't=this.kit?.id===`warlock`?null:await rn(this.kit,this.equippedOf(this.kit.id))'],
   // 글꼴 고르기(remod-popup.js): 눈누(jsDelivr)·Fontshare 웹폰트 주소만 바깥 요청 허용
   ['main', 'const own = /^(app|devtools|data|blob):/.test(details.url)', 'const own = /^(app|devtools|data|blob):/.test(details.url) || /^https:\\/\\/(cdn\\.jsdelivr\\.net\\/gh\\/project-?noonnu\\/|api\\.fontshare\\.com\\/v2\\/css\\?|cdn\\.fontshare\\.com\\/)/i.test(details.url)'],
   // 채팅 창(tools/remod-chat.js). 서버 요청 허용 경로에 chat·guild 를 더하고, 이름이 한글이라 쿼리에 % 도 허용
