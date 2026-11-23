@@ -116,13 +116,13 @@
     if (!on) {
       if (key) { clear(); key = ''; }
       // 같은 창을 마을의 제외 카드 고르기 등에서도 씀: 룰렛용으로 옮긴 카드·단추 자리를 지워 원작 배치로(남아 있으면 단추가 화면 밖으로 밀려 스크롤바가 생김)
-      if (lu?.classList.contains('__fate')) { lu.classList.remove('__fate'); lu.querySelectorAll('.d2-choice, .choose .actions, .frame').forEach((x) => { x.style.transform = ''; x.classList.remove('__show'); }); }
+      if (lu?.classList.contains('__fate')) { lu.classList.remove('__fate'); lu.querySelectorAll('.d2-choice, .choose .actions').forEach((x) => { x.style.transform = ''; x.classList.remove('__show'); }); { const fr = lu.querySelector('.frame'); fr?.style.removeProperty('translate'); fr?.style.removeProperty('scale'); } }
       return;
     }
     lu.classList.add('__fate');
     // 트리 판을 화면 오른쪽 끝으로 붙여 왼쪽을 룰렛·설명이 넓게 씀
     const fr = lu.querySelector('.frame'), br = lu.querySelector('.border-right');
-    if (fr && br) { fr.style.transform = ''; const b0 = br.getBoundingClientRect(), kf = b0.width / br.offsetWidth || 1; fr.style.transform = `translateX(${(innerWidth - 12 - b0.right) / kf}px)`; }
+    if (fr && br) { fr.style.translate = ''; fr.style.scale = ''; fr.style.transformOrigin = '0 0'; const f0 = fr.getBoundingClientRect(), b0 = br.getBoundingClientRect(), kf = f0.width / fr.offsetWidth || 1, s = (innerHeight * 0.72) / b0.height; fr.style.scale = String(s); fr.style.translate = `${(innerWidth - 12 - f0.left - s * (b0.right - f0.left)) / kf}px ${(40 - f0.top - s * (b0.top - f0.top)) / kf}px`; } // 게임 transform 은 두고 translate·scale 속성으로만
     const choices = [...lu.querySelectorAll('.d2-choice')];
     const k = choices.map((b) => { const i = b.querySelector('.skill-icon'); return (i ? iconKey(i) : '') + b.textContent; }).join('|') + '#' + [...lu.querySelectorAll('.choose .actions button')].map((b) => b.textContent).join(); // 리롤 횟수도 넣음: 고르기가 똑같이 다시 나와도 다시 돌림
     if (k !== key && !busy) { key = k; roll(choices); return; }
