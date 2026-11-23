@@ -16,6 +16,7 @@
     const w = document.createElement('div');
     w.id = '__gmp';
     w.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:99996;width:min(560px,92vw);padding:16px 20px;background:radial-gradient(ellipse at top,#2a2418,#0c0a07 70%);border:3px ridge #8a6d3b;box-shadow:0 0 0 2px #000,0 0 40px #000;font:13px sans-serif;color:#c8b27a';
+    w.className = '__d2p';
     w.onkeydown = w.onkeyup = (e) => e.stopPropagation();
     const note = document.createElement('div');
     note.style.cssText = 'min-height:18px;color:#fff;margin-top:8px';

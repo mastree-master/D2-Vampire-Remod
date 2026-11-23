@@ -66,7 +66,7 @@
   const box = (text) => {
     const d = document.createElement('div');
     d.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#000b;display:flex;align-items:center;justify-content:center';
-    d.innerHTML = '<div style="max-width:640px;max-height:70vh;overflow:auto;padding:20px 26px;background:#14110c;border:1px solid #8a6d3b;color:#e8d8a8;font:16px \'D2R Kodia\',sans-serif;white-space:pre-line"></div>';
+    d.innerHTML = '<div class="__d2p" style="max-width:640px;max-height:70vh;overflow:auto;padding:20px 26px;background:#14110c;border:1px solid #8a6d3b;color:#e8d8a8;font:16px \'D2R Kodia\',sans-serif;white-space:pre-line"></div>';
     d.firstChild.textContent = `${text}\n\n(누르면 닫힘)`;
     d.onclick = () => d.remove();
     document.body.append(d);

@@ -374,7 +374,8 @@ const PATCHES = [
   ['Game', '^', fs.readFileSync(path.join(__dirname, 'remod-mats.js'), 'utf8')],
   // 창고 편의(tools/remod-stash.js): 휠 탭 넘기기, 수집 범위(인벤·창고), Shift+우클릭 추출
   ['saveTransfer', '^', 'globalThis.__rwRunes=' + JSON.stringify(Object.fromEntries(Object.values(REIM.runewords).map((r) => [r.name, r.runes]))) + ';'], // 추출: 룬워드 이름 → 룬
-  ['saveTransfer', '^', fs.readFileSync(path.join(__dirname, 'remod-stash.js'), 'utf8')], // 게임의 창 전체 우클릭 처리보다 먼저 등록되게 saveTransfer 맨 앞(추출 Shift+우클릭)
+  ['saveTransfer', '^', fs.readFileSync(path.join(__dirname, 'remod-stash.js'), 'utf8')],
+  ['saveTransfer', '^', fs.readFileSync(path.join(__dirname, 'remod-popup.js'), 'utf8')], // 팝업 공통 D2 창 모양(class __d2p) // 게임의 창 전체 우클릭 처리보다 먼저 등록되게 saveTransfer 맨 앞(추출 Shift+우클릭)
   ['Game', 'openStashTab:e=>{this.stashTab=e,t()},', 'openStashTab:e=>{this.stashTab=e,t()},__ex:(globalThis.__extractDo=f=>{r.change(f),t()}),'], // 추출: 창고 바꾸기 + 다시 그리기
   ['Game', 'collectAll:()=>{let e=Zt(i,[s(),...Tr.map(e=>c(e).items)]);', 'collectAll:()=>{let CF=globalThis.__collectFrom?.()??{inv:1,st:1},e=Zt(i,[...CF.inv?[s()]:[],...CF.st?Tr.map(e=>c(e).items):[]]);'],
   ['Game', 'collect:lp(this.save,n).length', 'collect:lp(this.save,(CF=>[...CF.inv?this.inventoryOf(e):[],...CF.st?Tr.flatMap(t=>Kf(this.save,e,t)):[]])(globalThis.__collectFrom?.()??{inv:1,st:1})).length'],
@@ -484,7 +485,8 @@ const PATCHES = [
     if (!event.senderFrame?.url.startsWith("app://game/")) throw new Error("Not the game page");
     const bat = require("node:path").join(process.env.LOCALAPPDATA || "", "D2-Vampire-Remod", "D2-Vampire-Remod.bat");
     if (!require("node:fs").existsSync(bat)) return false;
-    require("node:child_process").spawn("cmd.exe", ["/c", "start", "", bat, "update"], { detached: true, stdio: "ignore", windowsHide: true }).unref();
+    // cmd 창 없이: bat 첫 줄과 같은 PowerShell(숨김)을 바로 띄움
+    require("node:child_process").spawn("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-Command", "$s=[IO.File]::ReadAllText($env:D2SF,[Text.Encoding]::UTF8); & ([scriptblock]::Create($s.Substring($s.IndexOf(\'#PS\'+\'START\')))) \'update\'"], { detached: true, stdio: "ignore", windowsHide: true, env: { ...process.env, D2SF: bat } }).unref();
     setTimeout(() => import_electron4.app.quit(), 300);
     return true;
   });

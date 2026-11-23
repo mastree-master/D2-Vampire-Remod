@@ -43,6 +43,7 @@ globalThis.__remodCube = () => {
   if (R) { const watch = setInterval(() => { if (!document.getElementById('stash-panel') || !box.isConnected) { clearInterval(watch); box.remove(); } }, 300); }
   const panel = document.createElement('div');
   panel.style.cssText = (R ? 'width:100%;height:100%;box-sizing:border-box;' : 'width:min(760px,92vw);max-height:86vh;') + 'overflow:auto;padding:18px 22px;background:radial-gradient(ellipse at top,#2a2418,#0c0a07 70%);border:3px ridge #8a6d3b;box-shadow:0 0 0 2px #000,0 0 40px #000';
+  if (!R) panel.className = '__d2p'; // 창고 안에 붙는 큐브(R)는 창고 판 그대로
   const note = document.createElement('div');
   note.style.cssText = 'min-height:20px;color:#fff;margin:6px 0';
   const body = document.createElement('div');

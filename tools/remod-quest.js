@@ -75,6 +75,7 @@
     box.style.cssText = 'position:fixed;inset:0;z-index:99996;background:rgb(0 0 0/.6);display:flex;align-items:center;justify-content:center;font:14px sans-serif;color:#c8b27a';
     const panel = document.createElement('div');
     panel.style.cssText = 'width:min(860px,94vw);max-height:88vh;overflow:auto;padding:18px 22px;background:radial-gradient(ellipse at top,#2a2418,#0c0a07 70%);border:3px ridge #8a6d3b;box-shadow:0 0 0 2px #000,0 0 40px #000';
+    panel.className = '__d2p';
     box.append(panel);
     box.onclick = (e) => { if (e.target === box) box.remove(); };
     box.onkeydown = (e) => e.stopPropagation();

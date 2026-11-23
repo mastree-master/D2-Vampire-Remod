@@ -207,6 +207,7 @@
     const wrap = el('div', 'position:fixed;inset:0;z-index:99995;background:rgb(0 0 0/.6);display:flex;align-items:center;justify-content:center;font:14px "D2R Kodia",sans-serif;color:#c8b27a');
     wrap.id = id;
     const panel = el('div', big === 'full' ? 'position:fixed;inset:0;overflow:auto;padding:28px 5vw;box-sizing:border-box;background:radial-gradient(ellipse at top,#2a2418,#050403 75%)' : big ? 'width:min(900px,92vw);max-height:88vh;overflow:auto;padding:22px 26px;background:radial-gradient(ellipse at top,#2a2418,#0c0a07 70%);border:3px ridge #8a6d3b;box-shadow:0 0 0 2px #000,0 0 40px #000' : 'background:#111;border:2px solid #5a4a2a;padding:14px 18px;min-width:400px;max-height:80vh;overflow:auto');
+    if (big !== 'full') panel.className = '__d2p';
     wrap.append(panel);
     if (big !== 'full') wrap.onclick = (e) => { if (e.target === wrap && !wrap.__drag) wrap.remove(); }; // 끌다 놓은 건 닫기 아님
     wrap.onkeydown = (e) => e.stopPropagation();

@@ -70,6 +70,7 @@
   // 준비: PvP 방은 마을에서 모두 [준비]를 누르면(누가 눌렀는지 ✓) 3초 뒤 같이 경기장(던전)으로. 판이 끝나면 3초 뒤 마을로 돌아와 다시 준비
   const rp = document.createElement('div');
   rp.style.cssText = 'position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:99982;display:none;min-width:320px;padding:12px 18px;background:radial-gradient(ellipse at top,#231d12,#0a0806 70%);border:3px ridge #8a6d3b;box-shadow:0 0 0 2px #000,0 0 30px #000;color:#e8d8a8;font:16px "D2R Kodia",sans-serif;text-align:center';
+  rp.className = '__d2p';
   const MODE_KO = { duel: '결투', team: '다대다', guild: '길드전' };
   let going = false, wasLive = false, leaving = false, readyKey = '';
   const drawReady = (s) => {

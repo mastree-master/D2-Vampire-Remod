@@ -7,7 +7,7 @@
     const d = document.createElement('div');
     d.id = '__updgate';
     d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:rgb(0 0 0/.85);display:flex;align-items:center;justify-content:center;font:15px sans-serif;color:#c8b27a';
-    d.innerHTML = `<div style="width:min(560px,90vw);padding:22px 26px;text-align:center;line-height:1.7;background:radial-gradient(ellipse at top,#231d12,#0a0806 70%);border:3px ridge #8a6d3b;box-shadow:0 0 0 2px #000,0 0 40px #000">
+    d.innerHTML = `<div class="__d2p" style="width:min(560px,90vw);padding:22px 26px;text-align:center;line-height:1.7;background:radial-gradient(ellipse at top,#231d12,#0a0806 70%);border:3px ridge #8a6d3b;box-shadow:0 0 0 2px #000,0 0 40px #000">
       <div style="font:bold 26px Cinzel,serif;color:#d8b860;text-shadow:0 0 10px #a60,0 2px 0 #000">업데이트가 필요합니다</div>
       <div style="margin:10px 0;color:#ddd">${String(need.note ?? '').replace(/</g, '&lt;')}</div>
       <div>지금 버전 <b style="color:#f77">v${globalThis.__remodVer}</b> → 최신 버전 <b style="color:#9f9">v${need.ver}</b></div>

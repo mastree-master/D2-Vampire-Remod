@@ -21,6 +21,7 @@
     const box = document.createElement('div');
     box.id = '__rwh';
     box.style.cssText = 'position:fixed;inset:40px 60px;z-index:100000;display:flex;flex-direction:column;background:radial-gradient(ellipse at top,#231d12,#0a0806 70%);border:3px ridge #8a6d3b;box-shadow:0 0 0 2px #000,0 0 40px #000;font:13px sans-serif;color:#c8b27a';
+    box.className = '__d2p';
     box.innerHTML = `<div style="padding:10px 14px 6px;border-bottom:2px solid #5a4a2a">
       <div style="font:bold 24px Cinzel,serif;color:#d8b860;text-align:center;letter-spacing:3px;text-shadow:0 0 10px #a60,0 2px 0 #000">룬워드 도움말 <span style="font:12px sans-serif;color:#887">(H 닫기)</span></div>
       <div style="display:flex;gap:6px;margin-top:6px;align-items:center">

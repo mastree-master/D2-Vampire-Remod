@@ -15,6 +15,7 @@ globalThis.__remodOptions = async () => {
   box.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgb(0 0 0/.85);display:flex;align-items:center;justify-content:center;font:14px sans-serif;color:#c8b27a';
   const panel = document.createElement('div');
   panel.style.cssText = 'background:#111;border:2px solid #5a4a2a;padding:16px 20px;max-height:90vh;overflow:auto;min-width:320px';
+  panel.className = '__d2p';
   panel.innerHTML = '<div style="font-size:18px;margin-bottom:10px">리모드 설정</div>';
   const grid = document.createElement('div');
   grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:4px 16px';
