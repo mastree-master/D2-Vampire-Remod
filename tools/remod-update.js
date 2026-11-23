@@ -24,9 +24,10 @@
   };
   const check = async () => {
     try {
-      // 최신 버전: GitHub version.txt(게임 본체가 받아 옴). 못 받으면 리모드 서버(/ver)
-      const gh = await globalThis.d2app?.remodLatest?.();
-      const v = gh ? { ver: gh, note: '새 버전이 나왔습니다. [업데이트 하기]를 누르면 새 버전을 받아 설치하고 다시 켭니다.' } : JSON.parse((await globalThis.d2app?.leaderboard?.('GET', '/ver'))?.body ?? 'null');
+      // 최신 버전: 리모드 서버(/ver, 캐시 없음). 못 받으면 GitHub version.txt(CDN 캐시로 몇 분 옛 값일 수 있음)
+      const sv = JSON.parse((await globalThis.d2app?.leaderboard?.('GET', '/ver').catch?.(() => null))?.body ?? 'null');
+      const gh = sv?.ver ? null : await globalThis.d2app?.remodLatest?.();
+      const v = sv?.ver ? sv : gh ? { ver: gh, note: '새 버전이 나왔습니다. [업데이트 하기]를 누르면 새 버전을 받아 설치하고 다시 켭니다.' } : null;
       need = v?.ver && globalThis.__remodVer && globalThis.__remodVer !== v.ver ? v : null;
     } catch { /* 오프라인이면 그대로 */ }
   };

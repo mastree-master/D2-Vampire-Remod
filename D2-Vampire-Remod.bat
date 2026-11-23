@@ -10,6 +10,8 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
 [Net.ServicePointManager]::SecurityProtocol = 'Tls12'
 $Repo = 'mastree-master/D2-Vampire-Remod'
+# 최신 버전: 리모드 서버 /ver 우선(캐시 없음, 되돌리기도 바로), 못 받으면 GitHub version.txt
+function Latest { try { $v = (Invoke-RestMethod 'http://150.230.3.40:8520/ver' -TimeoutSec 6).ver; if ($v) { return $v } } catch {}; (Invoke-WebRequest "https://raw.githubusercontent.com/$Repo/main/version.txt" -UseBasicParsing -TimeoutSec 8).Content.Trim() }
 $Electron = '44.7.1' # 원작 1105.3 이 쓰는 실행기 버전
 $Home2 = Join-Path $env:LOCALAPPDATA 'D2-Vampire-Remod'
 $Src = Join-Path $Home2 'src'
@@ -68,7 +70,7 @@ function Install {
 
     # 2. 최신 버전
     Show '최신 버전 확인 중' 4
-    try { $script:latest = (Invoke-WebRequest "https://raw.githubusercontent.com/$Repo/main/version.txt" -UseBasicParsing).Content.Trim() } catch { Fail "GitHub 에 연결하지 못했습니다.`n$($_.Exception.Message)" }
+    try { $script:latest = (Latest) } catch { Fail "GitHub 에 연결하지 못했습니다.`n$($_.Exception.Message)" }
     Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue; New-Item -ItemType Directory -Force $tmp | Out-Null
 
     # 3. 게임 실행기(Electron). 이미 같은 버전이 있으면 건너뜀
@@ -140,7 +142,7 @@ if ($Mode -eq 'launch' -or (-not $Mode -and (Test-Path "$Game\D2 Vampire Remod.e
     $up.Add_Click({ $up.Visible = $false; $chk.Visible = $false; $bar.Visible = $true; $all.Visible = $true; $btn.Enabled = $false; & $script:Run })
     $f.Add_Shown({
         Show "지금 v$have`n최신 버전 확인 중..." $null
-        $new = try { (Invoke-WebRequest "https://raw.githubusercontent.com/$Repo/main/version.txt" -UseBasicParsing -TimeoutSec 8).Content.Trim() } catch { '' }
+        $new = try { (Latest) } catch { '' }
         if (-not $new) { Show "지금 v$have`n최신 버전을 확인하지 못했습니다(인터넷 연결 확인)." $null; return }
         if ($new -eq $have) { Show "지금 v$have`n최신 버전입니다." $null; return }
         Show "지금 v$have`n새 버전 v$new 이 있습니다. [업데이트]를 누르세요." $null
@@ -154,7 +156,7 @@ if ($Mode -eq 'launch' -or (-not $Mode -and (Test-Path "$Game\D2 Vampire Remod.e
 # 업데이트 모드: 이미 최신이면 창 없이 바로 실행, 아니면 창을 띄우고 바로 시작
 if ($Mode -eq 'update') {
     $have = if (Test-Path "$Home2\version.txt") { (Get-Content "$Home2\version.txt" -Raw).Trim().TrimStart([char]0xFEFF) } else { '' }
-    $latest = try { (Invoke-WebRequest "https://raw.githubusercontent.com/$Repo/main/version.txt" -UseBasicParsing).Content.Trim() } catch { '' }
+    $latest = try { (Latest) } catch { '' }
     if ($have -and $have -eq $latest -and (Test-Path "$Game\D2 Vampire Remod.exe")) { Start-Process "$Game\D2 Vampire Remod.exe"; exit 0 }
     $f.Text = 'D2 리모드 업데이트'; $f.Add_Shown($script:Run)
 }

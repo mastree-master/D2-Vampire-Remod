@@ -122,7 +122,7 @@
     lu.classList.add('__fate');
     // 트리 판을 화면 오른쪽 끝으로 붙여 왼쪽을 룰렛·설명이 넓게 씀
     const fr = lu.querySelector('.frame'), br = lu.querySelector('.border-right');
-    if (fr && br) { fr.style.transition = 'none'; fr.style.translate = ''; fr.style.scale = ''; fr.style.transformOrigin = '0 0'; const f0 = fr.getBoundingClientRect(), b0 = br.getBoundingClientRect(), kf = lu.getBoundingClientRect().width / lu.offsetWidth || 1, s = (innerHeight * 0.72) / b0.height; fr.style.scale = String(s); fr.style.translate = `${(innerWidth - 12 - f0.left - s * (b0.right - f0.left)) / kf}px ${(40 - f0.top - s * (b0.top - f0.top)) / kf}px`; } // 게임 transform 은 두고 translate·scale 속성으로만(translate 는 부모 배율 기준, 게임 transition 은 끔)
+    if (fr && br) { fr.style.transition = 'none'; fr.style.translate = ''; fr.style.scale = ''; fr.style.transformOrigin = '0 0'; const f0 = fr.getBoundingClientRect(), b0 = br.getBoundingClientRect(), kf = lu.getBoundingClientRect().width / lu.offsetWidth || 1, s = (((document.getElementById('__chat')?.getBoundingClientRect().top ?? innerHeight * 0.85) - 70) - 40) / b0.height; fr.style.scale = String(s); fr.style.translate = `${(innerWidth - 12 - f0.left - s * (b0.right - f0.left)) / kf}px ${(40 - f0.top - s * (b0.top - f0.top)) / kf}px`; } // 게임 transform 은 두고 translate·scale 속성으로만(translate 는 부모 배율 기준, 게임 transition 은 끔)
     const choices = [...lu.querySelectorAll('.d2-choice')];
     const k = choices.map((b) => { const i = b.querySelector('.skill-icon'); return (i ? iconKey(i) : '') + b.textContent; }).join('|') + '#' + [...lu.querySelectorAll('.choose .actions button')].map((b) => b.textContent).join(); // 리롤 횟수도 넣음: 고르기가 똑같이 다시 나와도 다시 돌림
     if (k !== key && !busy) { key = k; roll(choices); return; }
