@@ -56,7 +56,7 @@
     const n = Math.min(3, base.length), wins = base.map(([, i]) => i).sort(() => Math.random() - 0.5).slice(0, n);
     const rep = Math.max(1, Math.ceil(8 / base.length)), items = [...Array(rep)].flatMap(() => base);
     const fl = (lu.querySelector('.border-right') ?? lu.querySelector('.tree')).getBoundingClientRect().left;
-    const colW = (fl - 20) / n, R = Math.max(50, Math.min(colW / 2 - 45, 100)); // 트리 왼쪽에 가로로 n 개, 각 룰렛 아래에 설명(세로 공간을 설명에 씀)
+    const colW = (fl - 20) / n, R = Math.max(50, Math.min(colW / 2 - 45, 150)); // 트리 왼쪽에 가로로 n 개, 각 룰렛 아래에 설명(세로 공간을 설명에 씀)
     const gold = Math.random() < 0.08 ? Math.floor(Math.random() * n) : -1;
     await Promise.all(wins.map(async (want, j) => {
       const cx = 10 + colW * j + colW / 2, cy = 60 + R + 40;
@@ -116,10 +116,13 @@
     if (!on) {
       if (key) { clear(); key = ''; }
       // 같은 창을 마을의 제외 카드 고르기 등에서도 씀: 룰렛용으로 옮긴 카드·단추 자리를 지워 원작 배치로(남아 있으면 단추가 화면 밖으로 밀려 스크롤바가 생김)
-      if (lu?.classList.contains('__fate')) { lu.classList.remove('__fate'); lu.querySelectorAll('.d2-choice, .choose .actions').forEach((x) => { x.style.transform = ''; x.classList.remove('__show'); }); }
+      if (lu?.classList.contains('__fate')) { lu.classList.remove('__fate'); lu.querySelectorAll('.d2-choice, .choose .actions, .frame').forEach((x) => { x.style.transform = ''; x.classList.remove('__show'); }); }
       return;
     }
     lu.classList.add('__fate');
+    // 트리 판을 화면 오른쪽 끝으로 붙여 왼쪽을 룰렛·설명이 넓게 씀
+    const fr = lu.querySelector('.frame'), br = lu.querySelector('.border-right');
+    if (fr && br) { fr.style.transform = ''; const b0 = br.getBoundingClientRect(), kf = b0.width / br.offsetWidth || 1; fr.style.transform = `translateX(${(innerWidth - 12 - b0.right) / kf}px)`; }
     const choices = [...lu.querySelectorAll('.d2-choice')];
     const k = choices.map((b) => { const i = b.querySelector('.skill-icon'); return (i ? iconKey(i) : '') + b.textContent; }).join('|') + '#' + [...lu.querySelectorAll('.choose .actions button')].map((b) => b.textContent).join(); // 리롤 횟수도 넣음: 고르기가 똑같이 다시 나와도 다시 돌림
     if (k !== key && !busy) { key = k; roll(choices); return; }
@@ -130,7 +133,7 @@
       // 룰렛마다 오른쪽에 당첨 기술 설명(원작 카드를 옮겨 보여 줌)
       const cards = new Set(wheels.map((w) => w.now()));
       lu.querySelectorAll('.d2-choice').forEach((x) => { x.classList.toggle('__show', cards.has(x)); if (!cards.has(x)) x.style.transform = ''; });
-      { const y0 = Math.max(...wheels.map((w) => w.cy + w.R + 56)); let y = y0; const fl = wheels.reduce((s, w) => s + w.colW, 0) + 20; for (const w of [...wheels].sort((a, b) => a.cx - b.cx)) { const b = w.now(); b.style.transform = ''; b.style.transformOrigin = '0 0'; const r0 = b.getBoundingClientRect(), k = r0.width / b.offsetWidth || 1, sc = Math.min(1.5, (fl - 20) / r0.width, (innerHeight - y0 - 60) / wheels.length / r0.height); b.style.transform = `translate(${(10 - r0.left) / k}px,${(y - r0.top) / k}px) scale(${sc})`; y += r0.height * sc + 6; } } // 설명: 룰렛 아래에 왼쪽 룰렛부터 세로로, 1.5배까지(글씨가 캔버스라 줄이면 못 읽음)
+      for (const w of wheels) { const b = w.now(); b.style.transform = ''; b.style.transformOrigin = '0 0'; const r0 = b.getBoundingClientRect(), k = r0.width / b.offsetWidth || 1, sc = Math.min(1.6, (w.colW - 16) / r0.width, (innerHeight * 0.82 - w.cy - w.R - 56) / r0.height); b.style.transform = `translate(${(w.cx - r0.width * sc / 2 - r0.left) / k}px,${(w.cy + w.R + 56 - r0.top) / k}px) scale(${sc})`; } // 설명: 각 룰렛 바로 아래, 칸 폭에 맞춰 최대 1.6배(글씨가 캔버스라 배율로 키움)
       // 리롤·스킵·제외 단추: 트리 테두리 아래
       const ac = lu.querySelector('.choose .actions'), fb = (lu.querySelector('.border-right') ?? lu.querySelector('.tree')).getBoundingClientRect();
       if (ac) { ac.style.transform = ''; const a0 = ac.getBoundingClientRect(), ka = a0.width / ac.offsetWidth || 1; ac.style.transform = `translate(${(fb.left + fb.width / 2 - a0.width / 2 - a0.left) / ka}px,${(fb.bottom + 12 - a0.top) / ka}px)`; }
