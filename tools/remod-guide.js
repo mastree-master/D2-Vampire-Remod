@@ -130,9 +130,9 @@
     frame.style.cssText = 'position:absolute;inset:0;z-index:1;pointer-events:none;box-sizing:border-box;border-style:solid;border-width:30px 7px 8px 7px;border-image:url(../d2/town/quest.png) 30 7 8 7 stretch';
     const head = document.createElement('div');
     head.style.cssText = 'position:absolute;z-index:2;left:0;right:0;top:0;height:30px;display:flex;align-items:center;justify-content:center;user-select:none';
-    head.innerHTML = '<span style="font:bold 16px \'D2 Exocet\',\'D2R Kodia\',serif;color:#c7b377;letter-spacing:1px;text-shadow:0 1px 2px #000">Vampire Remod 안내서</span>';
+    head.innerHTML = '<span style="font:bold 17px \'D2R Kodia\',sans-serif;color:#c7b377;letter-spacing:1px;text-shadow:0 1px 2px #000">Vampire Remod 안내서</span>';
     const x = document.createElement('div');
-    x.title = '닫기 (J)'; x.style.cssText = 'position:absolute;right:2px;top:2px;width:26px;height:26px;cursor:pointer;background:url(../d2/ui/storebtn-10.png) center/100% 100%';
+    x.title = '닫기 (J)'; x.style.cssText = 'position:absolute;right:14px;top:3px;width:24px;height:24px;cursor:pointer;background:url(../d2/ui/storebtn-10.png) center/100% 100%';
     x.onclick = () => wrap.remove();
     head.append(x);
     const body = document.createElement('div');
@@ -142,7 +142,7 @@
     const text = document.createElement('div');
     text.style.cssText = 'flex:1;overflow-y:auto;white-space:pre-line;line-height:1.7;padding:8px 14px;border:1px solid #4a4436;background:#000;color:#c8c8c8';
     const show = (i) => {
-      text.innerHTML = `<div style="font:bold 18px 'D2 Exocet','D2R Kodia',serif;color:#c7b377;margin-bottom:6px">${PAGES[i][0]}</div>` + PAGES[i][1].replace(/■ ([^\n]+)/g, '<b style="color:#c7b377">■ $1</b>');
+      text.innerHTML = `<div style="font:bold 19px 'D2R Kodia',sans-serif;color:#c7b377;margin-bottom:6px">${PAGES[i][0]}</div>` + PAGES[i][1].replace(/■ ([^\n]+)/g, '<b style="color:#c7b377">■ $1</b>');
       [...menu.children].forEach((b, j) => { b.style.background = j === i ? '#2a2418' : '#000'; b.style.color = j === i ? '#fff' : '#c7b377'; b.style.borderColor = j === i ? '#8a7a50' : '#4a4436'; });
     };
     PAGES.forEach(([t], i) => { const b = document.createElement('button'); b.textContent = t; b.style.cssText = 'text-align:left;padding:7px 10px;font:14px "D2R Kodia",sans-serif;border:1px solid #4a4436;cursor:pointer'; b.onclick = () => show(i); menu.append(b); });

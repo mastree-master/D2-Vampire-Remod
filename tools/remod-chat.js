@@ -652,9 +652,10 @@
   // FPS 왼쪽에 리모드 서버 접속 표시: 10초마다 /ver 왕복 시간. 붙으면 초록 ● 서버 32ms, 안 되면 빨강 ● 서버 끊김
   const srv = document.createElement('div');
   srv.style.cssText = 'position:fixed;top:2px;z-index:10001;background:#000;padding:0 6px;font:bold 12px monospace;pointer-events:none';
-  const ping = async () => {
+  const ping = async (again = true) => {
     const t = performance.now(); let ok = false;
     try { ok = (await globalThis.d2app?.leaderboard?.('GET', '/ver'))?.status === 200; } catch {}
+    if (!ok && again) return setTimeout(() => ping(false), 2000); // 켜자마자(연결 준비 전)·잠깐 끊김은 2초 뒤 한 번 더
     const ms = Math.round(performance.now() - t);
     srv.style.color = ok ? '#8e8' : '#f55'; srv.textContent = ok ? `● 리모드 서버 ${ms}ms` : '● 리모드 서버 끊김';
   };

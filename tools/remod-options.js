@@ -28,6 +28,17 @@ globalThis.__remodOptions = async () => {
   const delay = document.createElement('label');
   delay.style.cssText = 'display:block;margin-top:10px;color:#ddd';
   delay.innerHTML = `자동 진행 대기 (초) <input type="number" min="0" max="60" value="${opts.delay ?? 4}" style="width:50px">`;
+  // 리모드 글자 글꼴(한글·영어): 고르면 바로 바뀌고 이 PC 에 기억(remod-popup.js)
+  const fonts = document.createElement('div');
+  fonts.style.cssText = 'display:flex;gap:16px;margin-top:10px;color:#ddd;flex-wrap:wrap';
+  for (const [kind, label, key] of [['ko', '한글 글꼴', 'remod:fontKo'], ['en', '영어 글꼴', 'remod:fontEn']]) {
+    const l = document.createElement('label'), sel = document.createElement('select');
+    l.style.cssText = 'display:flex;gap:6px;align-items:center';
+    let cur = ''; try { cur = localStorage.getItem(key) ?? ''; } catch {}
+    for (const [fam, name] of globalThis.__remodFonts?.[kind] ?? []) { const o = document.createElement('option'); o.value = fam; o.textContent = name; o.selected = fam === cur; sel.append(o); }
+    sel.onchange = () => { try { localStorage.setItem(key, sel.value); } catch {} globalThis.__remodFontApply?.(); };
+    l.append(label, sel); fonts.append(l);
+  }
   const note = document.createElement('div');
   note.style.cssText = 'margin-top:10px;color:#888';
   note.textContent = '저장하고 게임을 다시 켜면 적용됩니다.';
@@ -42,7 +53,7 @@ globalThis.__remodOptions = async () => {
     note.textContent = (await globalThis.d2remod?.set(opts)) ? '저장했습니다. 게임을 다시 켜면 적용됩니다.' : '저장하지 못했습니다.';
     note.style.color = '#c8b27a';
   });
-  panel.append(grid, delay, note, buttons);
+  panel.append(grid, delay, fonts, note, buttons);
   box.append(panel);
   box.onkeydown = (e) => e.stopPropagation();
   box.onclick = (e) => { if (e.target === box) box.remove(); };

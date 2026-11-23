@@ -108,7 +108,10 @@ function Install {
     # 6. 바로가기·버전·이 파일 보관(게임 안 업데이트 버튼이 부름)
     $ws = New-Object -ComObject WScript.Shell
     $lnk = $ws.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Desktop')) 'D2 Vampire Remod.lnk'))
-    $lnk.TargetPath = "$Game\D2 Vampire Remod.exe"; $lnk.WorkingDirectory = $Game; $lnk.IconLocation = "$Home2\remod.ico"; $lnk.Save()
+    # 바탕화면 아이콘은 런처(이 파일의 launch 모드, 창 없는 PowerShell)를 띄움: 버전 확인·업데이트·실행
+    $lnk.TargetPath = Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'; $lnk.WindowStyle = 7
+    $lnk.Arguments = '-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command "$env:D2SF=''' + (Join-Path $Home2 'D2-Vampire-Remod.bat') + '''; $s=[IO.File]::ReadAllText($env:D2SF,[Text.Encoding]::UTF8); & ([scriptblock]::Create($s.Substring($s.IndexOf(''#PS''+''START'')))) launch"'
+    $lnk.WorkingDirectory = $Home2; $lnk.IconLocation = "$Home2\remod.ico"; $lnk.Save()
     [IO.File]::WriteAllText("$Home2\version.txt", $latest)
     Copy-Item "$Src\D2-Vampire-Remod.bat" (Join-Path $Home2 'D2-Vampire-Remod.bat') -Force -ErrorAction SilentlyContinue
     Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
@@ -117,6 +120,33 @@ function Install {
     $btn.Text = '실행'; $btn.Enabled = $true
     $btn.Remove_Click($script:onInstall); $btn.Add_Click({ Start-Process "$Game\D2 Vampire Remod.exe"; $f.Close() })
     if ($Mode -eq 'update') { Start-Process "$Game\D2 Vampire Remod.exe"; $f.Close() }
+}
+
+# 런처 모드(바탕화면 아이콘, 또는 설치된 PC 에서 이 bat 더블클릭): 지금·최신 버전, [업데이트] [실행], 켤 때 자동 업데이트 체크
+if ($Mode -eq 'launch' -or (-not $Mode -and (Test-Path "$Game\D2 Vampire Remod.exe"))) {
+    $have = if (Test-Path "$Home2\version.txt") { (Get-Content "$Home2\version.txt" -Raw).Trim().TrimStart([char]0xFEFF) } else { '' }
+    $cfg = "$Home2\launcher.txt"
+    $f.Text = 'D2 리모드'; $all.Visible = $false; $bar.Visible = $false
+    $chk = New-Object Windows.Forms.CheckBox; $chk.Text = '켤 때 자동 업데이트'; $chk.SetBounds(22, 178, 220, 24); $chk.Font = New-Object Drawing.Font('Malgun Gothic', 10)
+    $chk.Checked = (Test-Path $cfg) -and ((Get-Content $cfg -Raw).Trim() -eq 'auto')
+    $chk.Add_CheckedChanged({ Set-Content $cfg $(if ($chk.Checked) { 'auto' } else { 'manual' }) })
+    $up = New-Object Windows.Forms.Button; $up.Text = '업데이트'; $up.SetBounds(292, 172, 90, 32); $up.FlatStyle = 'Flat'; $up.BackColor = [Drawing.Color]::FromArgb(60, 20, 16); $up.Visible = $false
+    $f.Controls.AddRange(@($chk, $up))
+    $btn.Text = '실행'
+    $script:onInstall = { Start-Process "$Game\D2 Vampire Remod.exe"; $f.Close() }
+    $btn.Add_Click($script:onInstall)
+    $up.Add_Click({ $up.Visible = $false; $chk.Visible = $false; $bar.Visible = $true; $all.Visible = $true; $btn.Enabled = $false; & $script:Run })
+    $f.Add_Shown({
+        Show "지금 v$have`n최신 버전 확인 중..." $null
+        $new = try { (Invoke-WebRequest "https://raw.githubusercontent.com/$Repo/main/version.txt" -UseBasicParsing -TimeoutSec 8).Content.Trim() } catch { '' }
+        if (-not $new) { Show "지금 v$have`n최신 버전을 확인하지 못했습니다(인터넷 연결 확인)." $null; return }
+        if ($new -eq $have) { Show "지금 v$have`n최신 버전입니다." $null; return }
+        Show "지금 v$have`n새 버전 v$new 이 있습니다. [업데이트]를 누르세요." $null
+        $up.Visible = $true
+        if ($chk.Checked) { $up.PerformClick() }
+    })
+    [void]$f.ShowDialog()
+    exit 0
 }
 
 # 업데이트 모드: 이미 최신이면 창 없이 바로 실행, 아니면 창을 띄우고 바로 시작
