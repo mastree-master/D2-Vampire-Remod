@@ -538,7 +538,7 @@ for (const prefix of ['Game', 'saveTransfer']) {
   j.parts['D2R 화면'] = { fingerprint: 'remod-d2r-2', manifests: ['d2r.json'] };
   j.parts.Heroes.fingerprint += '-wk1'; // 워락 몸 그림을 꺼내도록 영웅 단계만 다시
   j.parts['Title and menus'].fingerprint += '-wk1'; // 워락 선택 화면 그림
-  j.parts.Heroes.fingerprint += '3-scy'; j.parts.Missiles.fingerprint += '-fx5'; // -fx5: 레거시 모드, HD 구운 그림(야만용사 함성 등) 지우고 원래 그림으로 다시 꺼냄
+  j.parts.Heroes.fingerprint += '3-scy-hd1'; /* -hd1: 워락 몸을 HD 3D 모델로 다시 뽑음 */ j.parts.Missiles.fingerprint += '-fx5'; // -fx5: 레거시 모드, HD 구운 그림(야만용사 함성 등) 지우고 원래 그림으로 다시 꺼냄
   // 소서리스 미리 구운 HD 그림(remodHdSorcFx)은 뺌: 탄은 입자 엔진이 그리고, 몹 맞음 그림으로 쓰일 때 둥근 덩어리가 돼서 원래 그림으로 // 워락 시전 효과(overlay)
   // 워락 동작 속도·소환수
   j.parts.Gear.fingerprint += '-wk1'; // 워락 장비 그림
