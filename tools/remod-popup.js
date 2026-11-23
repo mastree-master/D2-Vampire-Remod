@@ -42,4 +42,20 @@
     s.textContent = stack ? `.__d2p,.__d2p *,[id^="__"],[id^="__"] *{font-family:${stack},"D2R Kodia",sans-serif!important}` : '';
   };
   document.head ? add() : addEventListener('DOMContentLoaded', add);
+
+  // ESC: 리모드 창이 열려 있으면 맨 위 하나만 닫고 게임 ESC 메뉴는 안 엶
+  // 닫는 것: 아래 id 창(F5·통계·패치 기록·업데이트 묻기 등) + D2 창 모양(.__d2p)을 쓴 팝업(이름 없는 안내 상자 포함)
+  // 안 닫는 것: 채팅·캐릭터 선택(늘 떠 있음), 옛 버전 막음(__updgate)
+  const CLOSE = ['__onw', '__st', '__plog', '__updq', '__remod', '__quest', '__rwh', '__cube', '__guide', '__mats', '__gmp', '__skin', '__fmenu'];
+  const KEEP = '#__chat,#__chars,#__updgate';
+  const top = (x) => { while (x.parentElement && x.parentElement !== document.body) x = x.parentElement; return x; };
+  addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const pops = [...document.querySelectorAll('.__d2p')].filter((x) => !x.closest(KEEP)).map(top).filter((x) => getComputedStyle(x).position === 'fixed'); // body 바로 밑 떠 있는 창만(게임 화면 통째로 지우는 일 없게)
+    const open = [...new Set([...CLOSE.map((id) => document.getElementById(id)), ...pops])].filter((x) => x?.isConnected && x.offsetWidth && x !== document.body && !x.matches(KEEP));
+    if (!open.length) return;
+    const z = (x) => +getComputedStyle(x).zIndex || 0;
+    open.sort((a, b) => z(a) - z(b) || (a.compareDocumentPosition(b) & 4 ? -1 : 1)).pop().remove();
+    e.preventDefault(); e.stopImmediatePropagation();
+  }, true);
 })();

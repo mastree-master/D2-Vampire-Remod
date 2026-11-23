@@ -4,7 +4,7 @@
 (() => {
   const snd = (n, v = 0.6) => { try { const a = new Audio(`app://game/d2/sounds/${n}.wav`); a.volume = v; a.play().catch(() => {}); } catch {} };
   const st = document.createElement('style');
-  st.textContent = `#level-up.__fate{overflow:hidden}#level-up.__fate .tree{transform:translateX(18px)}#level-up.__fate .d2-choice{display:none!important}#level-up.__fate .d2-choice.__show{display:flex!important}
+  st.textContent = `#level-up.__fate{overflow:visible}#level-up.__fate .tree{transform:translateX(18px)}#level-up.__fate .d2-choice{display:none!important}#level-up.__fate .d2-choice.__show{display:flex!important}
 #level-up.__fate .choose>*:not(:has(.d2-choice)):not(.actions){visibility:hidden}#level-up.__fate .choose,#level-up.__fate .choose>*{overflow:visible!important}#level-up.__fate ::-webkit-scrollbar{display:none}
 #level-up.__fate .d2-choice.__show{border-image:none!important;background:rgba(0,0,0,.82)!important;box-shadow:none!important;pointer-events:auto;cursor:pointer;position:absolute!important;left:0;top:0;width:372px;z-index:5}
 #level-up.__fate .d2-choice.__show .key,#level-up.__fate .d2-choice.__show .skill-icon{display:none!important}
@@ -56,10 +56,10 @@
     const n = Math.min(3, base.length), wins = base.map(([, i]) => i).sort(() => Math.random() - 0.5).slice(0, n);
     const rep = Math.max(1, Math.ceil(8 / base.length)), items = [...Array(rep)].flatMap(() => base);
     const fl = (lu.querySelector('.border-right') ?? lu.querySelector('.tree')).getBoundingClientRect().left;
-    const R = Math.max(60, Math.min((innerHeight - 260) / n / 2 - 50, fl / 2 - 70, 120)), cx = R + 50; // 화면 왼쪽 끝에 위아래로, 오른쪽에 설명
+    const colW = (fl - 20) / n, R = Math.max(50, Math.min(colW / 2 - 45, 100)); // 트리 왼쪽에 가로로 n 개, 각 룰렛 아래에 설명(세로 공간을 설명에 씀)
     const gold = Math.random() < 0.08 ? Math.floor(Math.random() * n) : -1;
     await Promise.all(wins.map(async (want, j) => {
-      const cy = 90 + R + j * (2 * R + 110);
+      const cx = 10 + colW * j + colW / 2, cy = 60 + R + 40;
       const W = document.createElement('div');
       Object.assign(W.style, { position: 'fixed', zIndex: 99995, left: `${cx}px`, top: `${cy}px`, width: '0', height: '0', pointerEvents: 'none' });
       const disc = document.createElement('div');
@@ -88,7 +88,7 @@
       const hit = ring.children[win];
       Object.assign(hit.style, { borderColor: j === gold ? '#ffe680' : '#ffd36a', boxShadow: j === gold ? '0 0 26px #ffd000, 0 0 8px #fff' : '0 0 18px #ffb000', pointerEvents: 'auto', cursor: 'pointer' });
       const now = () => document.querySelectorAll('#level-up .d2-choice')[want] ?? choices[want];
-      const w = { W, hit, want, now, cx, cy, R, gold: j === gold };
+      const w = { W, hit, want, now, cx, cy, R, colW, gold: j === gold };
       // 누르면 배움. [제외]를 누른 뒤(banishing)면 이 룰렛 기술을 제외
       hit.onclick = () => { if (lu.classList.contains('banishing')) { pass = true; now().click(); pass = false; return; } pick(now(), hit, w.gold); };
       wheels.push(w);
@@ -130,7 +130,7 @@
       // 룰렛마다 오른쪽에 당첨 기술 설명(원작 카드를 옮겨 보여 줌)
       const cards = new Set(wheels.map((w) => w.now()));
       lu.querySelectorAll('.d2-choice').forEach((x) => { x.classList.toggle('__show', cards.has(x)); if (!cards.has(x)) x.style.transform = ''; });
-      for (const w of wheels) { const b = w.now(); b.style.transform = ''; const r0 = b.getBoundingClientRect(), k = r0.width / b.offsetWidth || 1; b.style.transform = `translate(${(w.cx + w.R + 50 - r0.left) / k}px,${(w.cy - r0.height / 2 - r0.top) / k}px)`; }
+      for (const w of wheels) { const b = w.now(); b.style.transform = ''; b.style.transformOrigin = '0 0'; const r0 = b.getBoundingClientRect(), k = r0.width / b.offsetWidth || 1, sc = Math.min(1, (w.colW - 10) / r0.width); b.style.transform = `translate(${(w.cx - r0.width * sc / 2 - r0.left) / k}px,${(w.cy + w.R + 56 - r0.top) / k}px) scale(${sc})`; }
       // 리롤·스킵·제외 단추: 트리 테두리 아래
       const ac = lu.querySelector('.choose .actions'), fb = (lu.querySelector('.border-right') ?? lu.querySelector('.tree')).getBoundingClientRect();
       if (ac) { ac.style.transform = ''; const a0 = ac.getBoundingClientRect(), ka = a0.width / ac.offsetWidth || 1; ac.style.transform = `translate(${(fb.left + fb.width / 2 - a0.width / 2 - a0.left) / ka}px,${(fb.bottom + 12 - a0.top) / ka}px)`; }

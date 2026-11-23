@@ -473,7 +473,11 @@
         const diffBox = put(sub, 0, 0, null, 0, 1136, 1224); diffBox.style.pointerEvents = 'none';
         const drawD = () => {
           diffBox.replaceChildren();
+          // 내 캐릭터가 깬(열린) 난이도만 고를 수 있음. 공포는 공포 영역이 열렸을 때만
+          const cls = globalThis.__remodChar?.id, open = [...(globalThis.__cfApi?.diffs(cls) ?? ['normal']), ...(terrorNow(cls) ? ['terror'] : [])];
+          if (!open.includes(diffPick)) diffPick = 'normal';
           Object.entries(DIFF).forEach(([k, t], i) => {
+            if (!open.includes(k)) { const b = button(diffBox, [200, 395, 590, 785][i], 500, 'lobby/creategame/creategame_difficultybtn', t, () => {}, 32, 190, 70); b.style.pointerEvents = 'auto'; b.style.opacity = '.35'; b.title = '아직 안 열린 난이도'; return; }
             const b = button(diffBox, [200, 395, 590, 785][i], 500, 'lobby/creategame/creategame_difficultybtn', k === diffPick ? '✓ ' + t : t, () => { diffPick = k; drawD(); showTier(); globalThis.__drawS?.(); }, 32, 190, 70);
             b.style.pointerEvents = 'auto';
             if (k === diffPick) put(diffBox, [200, 395, 590, 785][i], 500, 'lobby/creategame/difficultyselector', 0, 190, 70);

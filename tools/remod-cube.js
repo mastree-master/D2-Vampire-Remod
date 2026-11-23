@@ -125,13 +125,13 @@ globalThis.__remodCube = () => {
       done(r?.text ?? '응답이 없습니다.');
     };
 
-    // 원작 호라드릭 큐브 창 그림(supertransmogrifier.dc6) 위 3×4 칸. 아이템을 집은 채 칸을 누르면 들어가고(제자리로 돌려놓음), 빈손으로 누르면 뺌
+    // 원작 호라드릭 큐브 창 그림(supertransmogrifier.dc6)에서 가운데 3×4 칸만 잘라 보여 줌. 아이템을 집은 채 칸을 누르면 들어가고(제자리로 돌려놓음), 빈손으로 누르면 뺌
     const cubeBox = document.createElement('div');
-    cubeBox.style.cssText = 'position:relative;width:320px;height:432px;margin:0 auto;flex:none';
-    cubeBox.innerHTML = `<img src="${globalThis.__cubeArt ?? ''}" style="position:absolute;inset:0;image-rendering:pixelated">`;
+    cubeBox.style.cssText = 'position:relative;width:120px;height:150px;margin:0 auto;flex:none;overflow:hidden';
+    cubeBox.innerHTML = `<img src="${globalThis.__cubeArt ?? ''}" style="position:absolute;left:-101px;top:-122px;image-rendering:pixelated">`;
     const cell = document.createElement('div');
     cell.title = '아이템을 집어서 여기에 놓으세요';
-    cell.style.cssText = 'position:absolute;left:117px;top:139px;width:88px;height:116px;cursor:pointer;display:flex;align-items:center;justify-content:center';
+    cell.style.cssText = 'position:absolute;left:16px;top:17px;width:88px;height:116px;cursor:pointer;display:flex;align-items:center;justify-content:center';
     cell.onclick = (e) => {
       e.stopPropagation();
       const held = save.cursor?.item;
@@ -209,12 +209,12 @@ globalThis.__remodCube = () => {
     // 1. 룬 올리기: 같은 룬 3개 → 다음 룬 1개
     const rs = section('룬 올리기', '같은 룬 3개를 다음 단계 룬 1개로 바꿉니다. 재료 창고에 있는 룬을 씁니다.');
     const grid = document.createElement('div');
-    grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:4px';
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px';
     RUNES.slice(0, -1).forEach((r, i) => {
       const n = cnt(r);
       if (!n) return;
       const row = document.createElement('div');
-      row.style.cssText = 'display:flex;gap:6px;align-items:center;justify-content:space-between;padding:2px 4px;color:#ddd';
+      row.style.cssText = 'display:flex;gap:6px;align-items:center;justify-content:space-between;padding:2px 4px;color:#ddd;white-space:nowrap';
       row.append(Object.assign(document.createElement('span'), { textContent: `${ko(r)} × ${n}` }),
         btn(`→ ${ko(RUNES[i + 1]).replace(/^\d+ /, '')}`, () => { take(r, 3); give(RUNES[i + 1], 1); done(`${ko(r)} 3개 → ${ko(RUNES[i + 1])} 1개`); }, n >= 3));
       grid.append(row);

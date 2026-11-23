@@ -25,7 +25,8 @@
     const roots = [s.inventoryByClass?.[cls], s.equippedByClass?.[cls], s.charmsByClass?.[cls], s.stashTabs?.[cls], s.mercs?.[cls], ...Object.entries(s.stashTabs ?? {}).filter(([k]) => k.startsWith('shared')).map(([, v]) => v)];
     const tampered = [], owners = [];
     for (const it of roots.flatMap(itemsIn)) { const p = itemProblems(it); problems.push(...p); if (p.length && isTampered(it)) { tampered.push(it.id); owners.push(it.own ?? ''); } }
-    return { problems: [...new Set(problems)], tampered, owners };
+    // 막는 건 수치가 원본보다 높거나 없는 줄이 붙은 것만. '게임에 없는 아이템'(예전 자료로 만든 템)·'생성 기록 없음'은 우리 쪽 자료 변경이라 막지 않음
+    return { problems: [...new Set(problems)].filter((p) => p.includes(' (원본 ') || p.includes(': 없는 줄 ')), tampered, owners };
   };
   // 변조 경고 대상: 2026-11-23(한국 시각)부터 생긴 템 중 수치가 원본보다 높거나 원본에 없는 줄이 붙은 것. 생성 시각은 템 id 끝 8자리(36진수 ms)
   // 생성 기록 없음·게임에 없는 템(자료 바뀜 등)은 세지 않음: 우리 쪽 버그로 잘못 걸리면 안 되므로
