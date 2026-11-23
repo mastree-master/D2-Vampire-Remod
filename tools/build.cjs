@@ -114,7 +114,7 @@ for (const d of REIM.drops) if (T100.includes(d[0])) d[2] = 999;
 const PATCHES = [
   // 게임 추출 단계에 "D2R 화면"을 더한다: D2R 이 깔린 PC 면 메뉴·대기실 원본 그림을 d2/d2r 에 꺼냄(각자 PC 에서, 배포 안 함)
   ['extract-worker', '^', fs.readFileSync(path.join(__dirname, 'remod-d2r-step.js'), 'utf8')],
-  ['extract-worker', '  { name: "Weather", run: extractWeather, weight: 0.2, manifests: ["weather"] }\n];', '  { name: "Weather", run: extractWeather, weight: 0.2, manifests: ["weather"] },\n  { name: "D2R 화면", run: () => remodD2rUi(installDir, out), weight: 0.5, manifests: ["d2r"] }\n];'],
+  ['extract-worker', '  { name: "Weather", run: extractWeather, weight: 0.2, manifests: ["weather"] }\n];', '  { name: "Weather", run: extractWeather, weight: 0.2, manifests: ["weather"] },\n  { name: "D2R 화면", run: (ctx) => remodD2rUi(require("node:worker_threads").workerData?.extractLane?.installDir ?? installDir, ctx.out), weight: 0.5, manifests: ["d2r"] }\n];'],
   // 워락: 원작 추출기가 1.14 모양에 맞추려 뺀 워락 줄(plrtype 9번째)을 살리고 몸 그림(chars/wk)을 꺼낸다
   ['extract-worker', '  druid: [{ weaponClass: "1HS", items: { RH: "clb", SH: "buc" } }],', '  druid: [{ weaponClass: "1HS", items: { RH: "clb", SH: "buc" } }],\n  warlock: [{ weaponClass: "STF", items: { RH: "scy" } }],'],
   ['extract-worker', '  plrtype: { rows: 8 },', '  plrtype: { rows: 9 },'],
@@ -522,7 +522,7 @@ for (const prefix of ['Game', 'saveTransfer']) {
 // 추출 단계 목록에 "D2R 화면" 등록: 이미 추출한 PC 도 이 단계만 새로 돌린다(지문이 바뀌면 다시 꺼냄)
 {
   const f = path.join(unpacked, 'desktop', 'dist', 'extract-parts.json'), j = JSON.parse(fs.readFileSync(f, 'utf8'));
-  j.parts['D2R 화면'] = { fingerprint: 'remod-d2r-1', manifests: ['d2r.json'] };
+  j.parts['D2R 화면'] = { fingerprint: 'remod-d2r-2', manifests: ['d2r.json'] };
   j.parts.Heroes.fingerprint += '-wk1'; // 워락 몸 그림을 꺼내도록 영웅 단계만 다시
   j.parts['Title and menus'].fingerprint += '-wk1'; // 워락 선택 화면 그림
   j.parts.Heroes.fingerprint += '3-scy'; j.parts.Missiles.fingerprint += '-fx5'; // -fx5: 레거시 모드, HD 구운 그림(야만용사 함성 등) 지우고 원래 그림으로 다시 꺼냄
