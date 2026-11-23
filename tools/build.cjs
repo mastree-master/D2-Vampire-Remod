@@ -8,9 +8,13 @@ const { execSync } = require('node:child_process');
 const ROOT = path.join(__dirname, '..');
 // 리모드 게임 폴더: 개발 PC 는 저장소의 game/, 사용자 PC 는 설치 bat 가 D2S_REMOD_GAME 으로 알려 준다
 const GAME = process.env.D2S_REMOD_GAME || path.join(ROOT, 'game');
+// 저장소 game/ 로 만드는 건 로컬 시험용: 앱 이름·작업표시줄 묶음·제목에 테스트가 붙어 설치본(본섭용)과 따로 돎
+const TEST = !process.env.D2S_REMOD_GAME;
 const OUT = path.join(GAME, 'resources', 'app.asar');
 // 리모드 게임이 켜진 채로 app.asar 를 바꾸면 게임이 망가질 수 있다(원작 D2 Survivors 는 다른 폴더라 켜져 있어도 됨)
-if (execSync('tasklist /FO CSV /NH').toString().split('\n').some((l) => /^"D2 Vampire Remod\.exe"/.test(l) && +l.split('","')[1] !== process.pid)) { /* 빌드를 게임 실행 파일로 돌릴 때 자기 자신은 빼고 */ console.error('게임이 켜져 있어 빌드하지 않습니다. 게임을 끄고 다시 실행하세요.'); process.exit(1); }
+// 이 GAME 폴더의 게임만 봄: 다른 곳에 설치된 리모드(사용자 게임)가 켜져 있어도 빌드함
+const PS_LIST = Buffer.from("Get-CimInstance Win32_Process -Filter \"name='D2 Vampire Remod.exe'\" | ForEach-Object { [string]$_.ProcessId + '|' + $_.ExecutablePath }", 'utf16le').toString('base64');
+if (execSync(`powershell -NoProfile -EncodedCommand ${PS_LIST}`).toString().split(/\r?\n/).some((l) => { const [id, p] = l.split('|'); return p && path.resolve(p).toLowerCase().startsWith(path.resolve(GAME).toLowerCase() + path.sep) && +id !== process.pid; })) { /* 빌드를 게임 실행 파일로 돌릴 때 자기 자신은 빼고 */ console.error('게임이 켜져 있어 빌드하지 않습니다. 게임을 끄고 다시 실행하세요.'); process.exit(1); }
 const work = fs.mkdtempSync(path.join(os.tmpdir(), 'd2s-remod-'));
 const ASAR = require('./asar-lite.cjs'); // npx 없이 풀고 묶기(사용자 PC 에 Node 가 없어도 됨)
 
@@ -236,10 +240,10 @@ const PATCHES = [
   // 리모드는 따로 된 게임: 환경변수 없이 켜도 원본 세이브·공식 서버를 쓰지 않게 기본값을 리모드 것으로
   // 원작은 순위 서버 주소를 내 PC(127.0.0.1)만 허용: 바깥 리모드 서버(오라클)도 되게
   ['main', 'if (url.protocol !== "http:" || !["127.0.0.1", "localhost"].includes(url.hostname)) throw new Error(`D2S_LEADERBOARD_URL', 'if (!["http:", "https:"].includes(url.protocol)) throw new Error(`D2S_LEADERBOARD_URL'],
-  ['main', '^', 'process.env.D2S_USER_DATA ||= require("node:path").join(process.env.APPDATA || "", "D2-Vampire-Remod"); process.env.D2S_LEADERBOARD_URL ||= "' + SERVER_URL + '";'],
-  ['main', 'title: "D2 Survivors"', 'title: "D2 Vampire Remod"'],
+  ['main', '^', 'process.env.D2S_USER_DATA ||= require("node:path").join(process.env.APPDATA || "", "D2-Vampire-Remod' + (TEST ? '-Test' : '') + '"); process.env.D2S_LEADERBOARD_URL ||= "' + (TEST ? 'http://127.0.0.1:8520' : SERVER_URL) + '";'], // 시험용은 기본 세이브·서버도 따로(로컬)
+  ['main', 'title: "D2 Survivors"', 'title: "D2 Vampire Remod' + (TEST ? ' (테스트)' : '') + '"'],
   // 윈도우가 원작과 다른 게임으로 보게(작업표시줄·실행 중 묶음 분리)
-  ['main', 'import_electron4.app.setName("D2 Survivors");', 'import_electron4.app.setName("D2 Vampire Remod"); import_electron4.app.setAppUserModelId("D2VampireRemod");'],
+  ['main', 'import_electron4.app.setName("D2 Survivors");', 'import_electron4.app.setName("D2 Vampire Remod' + (TEST ? ' 테스트' : '') + '"); import_electron4.app.setAppUserModelId("D2VampireRemod' + (TEST ? 'Test' : '') + '");'],
   ['Game', '^', 'setInterval(()=>{document.title!==`D2 Vampire Remod`&&(document.title=`D2 Vampire Remod`)},1e3);'],
   // 리모드 전용 쥬얼 옵션을 원작 쥬얼 옵션 표(CJe) 끝에 더한다. 끝에는 직업별 스킬 탭 +1 (거대 부적 스킬러와 같은 이름·방식, 매직 전용, 레벨 60). 오색의(Iridescent)는 모든 저항(원작 Shimmering 과 같은 방식)
   ['saveTransfer', '...wJe()]}', '...wJe(),' + JEWELS.map(([k, s, g, n, , l, r, f, a, b]) => `...q(\`${k}\`,\`${s}\`,${g},[[${JSON.stringify(n)},${l},${r},${f},${a},${b},e]])${n === 'Iridescent' ? '.map(e=>TJ(e,{alike:[`lightningResist`,`coldResist`,`poisonResist`]}))' : ''}`).join(',') + ',...Object.keys(Ni).flatMap(e=>zi.map(t=>({name:Ni[e].trees[t-1].affixes[0],kind:`prefix`,stat:Fi(e,t),min:1,max:1,level:0,rows:dJ(`jewl`),d2:{level:60,req:50,frequency:1,group:213,skiller:!0,...K}}))),...' + JSON.stringify(SKILLS.map(([id, n]) => [id, n])) + '.map(([i,n])=>({name:`of ${n}`,kind:`suffix`,stat:`skill:${i}`,min:1,max:2,level:0,rows:dJ(`jewl`),d2:{level:65,req:50,frequency:.05,group:300,...K}}))]}'],
@@ -453,7 +457,7 @@ const PATCHES = [
   ['Game', '__plogF="1.65', '__plogF=__remodLog||"1.65'],
   ['Game', 'w.textContent=globalThis.__papp+`\\n\\n`+(d?', 'w.textContent=(d?'],
   ['Game', '패치 기록 v1.69 (F10 닫기)', 'REMOD 패치 기록 v${__remodVer} (F10 닫기)'],
-  ['Game', 'D2S v1.69</span>', 'D2 Vampire Remod v${__remodVer}</span>'],
+  ['Game', 'D2S v1.69</span>', 'D2 Vampire Remod v${__remodVer}' + (TEST ? ' (테스트)' : '') + '</span>'],
   // 레어 아이템(부적 빼고)은 15% 확률로 지금 직업의 단일 스킬 +1~2 가 하나 더 붙는다
   ['saveTransfer', 'function cY(e,t,n,r,i,a=2){t===`normal`', 'function cY(e,t,n,r,i,a=2){let __x=__cY0(e,t,n,r,i,a);__x?.type===`jewel`&&__x.mods?.forEach(m=>/^skill:/.test(m.stat)&&(m.staff=!0));if(__x?.rarity===`rare`&&__x.type!==`charm`&&Math.random()<.15&&!__x.mods?.some(m=>m.stat.startsWith(`skill:`))){let c=globalThis.__gm?.world?.player?.cls,L=' + JSON.stringify(Object.fromEntries(['amazon','sorceress','necromancer','assassin','barbarian','paladin','druid'].map((c) => [c, SKILLS.filter((k) => k[3] === c).map((k) => k[0])]))) + ',l=L[c]??Object.values(L)[Math.floor(Math.random()*7)];__x.mods=[...__x.mods??[],{stat:`skill:${l[Math.floor(Math.random()*l.length)]}`,value:1+(Math.random()<.3),staff:!0}]}return __x}function __cY0(e,t,n,r,i,a=2){t===`normal`'],
   // 위 레어 단일 스킬 옵션은 검사(인정 안 됨)에서 빼고 본다

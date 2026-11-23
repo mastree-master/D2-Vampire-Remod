@@ -648,6 +648,17 @@
   }, 300);
   globalThis.__openLobby = roomPanel;
   globalThis.__bnet = bnet; // 캐릭터 선택 [대기실 입장]이 게임을 켜지 않고 바로 부름
-  const start = () => { document.body.append(box); draw(); poll(); setInterval(poll, 2000); rankLoad(); setInterval(rankLoad, 300e3); };
+  // FPS 왼쪽에 리모드 서버 접속 표시: 10초마다 /ver 왕복 시간. 붙으면 초록 ● 서버 32ms, 안 되면 빨강 ● 서버 끊김
+  const srv = document.createElement('div');
+  srv.style.cssText = 'position:fixed;top:2px;z-index:10001;background:#000;padding:0 6px;font:bold 12px monospace;pointer-events:none';
+  const ping = async () => {
+    const t = performance.now(); let ok = false;
+    try { ok = (await globalThis.d2app?.leaderboard?.('GET', '/ver'))?.status === 200; } catch {}
+    const ms = Math.round(performance.now() - t);
+    srv.style.color = ok ? '#8e8' : '#f55'; srv.textContent = ok ? `● 리모드 서버 ${ms}ms` : '● 리모드 서버 끊김';
+  };
+  // FPS 칸(MyPatch #__fps) 바로 왼쪽. FPS 를 끄면 그 자리(오른쪽 끝)
+  const place = () => { const f = document.getElementById('__fps'); srv.style.right = `${f?.offsetWidth ? innerWidth - f.getBoundingClientRect().left + 4 : 8}px`; };
+  const start = () => { document.body.append(box, srv); draw(); poll(); setInterval(poll, 2000); rankLoad(); setInterval(rankLoad, 300e3); ping(); setInterval(ping, 10e3); place(); setInterval(place, 1000); };
   document.body ? start() : addEventListener('DOMContentLoaded', start);
 })();
