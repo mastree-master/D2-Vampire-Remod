@@ -127,7 +127,7 @@ globalThis.__remodCube = () => {
 
     // 원작 호라드릭 큐브 창 그림(supertransmogrifier.dc6)에서 가운데 3×4 칸만 잘라 보여 줌. 아이템을 집은 채 칸을 누르면 들어가고(제자리로 돌려놓음), 빈손으로 누르면 뺌
     const cubeBox = document.createElement('div');
-    cubeBox.style.cssText = 'position:relative;width:120px;height:150px;margin:0 auto;flex:none;overflow:hidden';
+    cubeBox.style.cssText = 'position:relative;width:120px;height:134px;margin:0 auto;flex:none;overflow:hidden';
     cubeBox.innerHTML = `<img src="${globalThis.__cubeArt ?? ''}" style="position:absolute;left:-101px;top:-122px;image-rendering:pixelated">`;
     const cell = document.createElement('div');
     cell.title = '아이템을 집어서 여기에 놓으세요';

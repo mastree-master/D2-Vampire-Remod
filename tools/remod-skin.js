@@ -17,7 +17,7 @@ ${PANELS},#__mats>div{background:${BG}!important;border:7px solid transparent!im
 #__party>*{background:${BG}!important;border:1px solid #8a6d3b!important}
 `;
   // 창마다 오른쪽 위 X 닫기 버튼. [창 id, 버튼을 붙일 안쪽 판(겉 덮개 창은 첫 자식)]
-  const CLOSE = { __plog: 0, __pguide: 0, __prw: 0, __pdrop: 0, __pks: 0, __rwh: 0, __mats: 0, __cube: 1, __quest: 1, __room: 1, __remod: 1, __guide: 1 };
+  const CLOSE = { __plog: 0, __pguide: 0, __prw: 0, __pdrop: 0, __pks: 0, __rwh: 0, __mats: 0, __cube: 1, __quest: 1, __room: 1, __remod: 1 };
   const addX = () => {
     for (const [id, inner] of Object.entries(CLOSE)) {
       const o = document.getElementById(id), p = inner ? o?.firstElementChild : o;

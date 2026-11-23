@@ -63,8 +63,9 @@
     const p = panel(), s = save(); if (!p || !s) return;
     // 수집 단추 옆 ☑인벤 ☑창고
     const col = [...p.querySelectorAll('.stash-collect')].find((b) => b.textContent === '수집');
-    if (col && !p.querySelector('.__colFrom')) {
-      const box = document.createElement('div');
+    let box = p.querySelector('.__colFrom');
+    if (col && !box) {
+      box = document.createElement('div');
       box.className = '__colFrom';
       box.style.cssText = 'position:absolute;display:flex;gap:10px;font:12px sans-serif;color:#c8b88a;pointer-events:auto;z-index:6';
       for (const [k, t] of [['inv', '인벤'], ['st', '창고']]) {
@@ -73,11 +74,13 @@
         c.onchange = () => { s.remodCollect = { ...globalThis.__collectFrom(), [k]: c.checked ? 1 : 0 }; globalThis.__saveNow?.(); refresh(); };
         l.style.cssText = 'display:flex;align-items:center;cursor:pointer'; l.append(c, t); box.append(l);
       }
-      // 창고 판은 배율로 줄어 있어 화면 좌표 대신 단추와 같은 부모 안에서 단추 바로 위에
-      // 자리는 검색칸 오른쪽 빈칸(같은 높이). 화면 좌표 차이를 판 배율(k)로 나눠 판 안 좌표로
+    }
+    // 자리는 지금 탭의 검색칸 오른쪽 빈칸(같은 높이). 탭마다 검색칸 폭이 달라(고유 탭은 넓음) 매번 다시 잡음
+    // 창고 판은 배율로 줄어 있어 화면 좌표 차이를 판 배율(k)로 나눠 단추와 같은 부모 안 좌표로
+    if (col && box) {
       const host = col.offsetParent ?? col.parentElement;
-      host.append(box);
-      const cr = col.getBoundingClientRect(), k = cr.width / col.offsetWidth || 1, sr = [...p.querySelectorAll('.stash-search')].find((x) => x.offsetWidth)?.getBoundingClientRect();
+      if (box.parentElement !== host) host.append(box);
+      const cr = col.getBoundingClientRect(), k = cr.width / col.offsetWidth || 1, sr = [...p.querySelectorAll('.stash-search, .uq-search')].find((x) => x.offsetWidth)?.getBoundingClientRect();
       const bh = box.getBoundingClientRect().height;
       Object.assign(box.style, sr ? { left: `${col.offsetLeft + (sr.right + 14 - cr.left) / k}px`, top: `${col.offsetTop + (sr.top + (sr.height - bh) / 2 - cr.top) / k}px` } : { left: `${col.offsetLeft}px`, top: `${col.offsetTop - 20}px` });
     }
