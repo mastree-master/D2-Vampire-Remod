@@ -569,6 +569,8 @@ for (const prefix of ['Game', 'saveTransfer']) {
   const css = '<style>#embers,.icon{display:none!important}html,body{background:radial-gradient(ellipse at 50% 38%,#3a0606 0%,#120202 45%,#000 80%)!important}.wordmark{background:linear-gradient(#ffb0a0,#e0201a 45%,#6a0808)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;text-shadow:none!important;filter:drop-shadow(0 0 10px #a00)}</style>';
   fs.writeFileSync(html, fs.readFileSync(html, 'utf8').replaceAll('D2 Survivors', 'D2 Vampire Remod').replace('</head>', css + '</head>'));
 }
+// 창·작업표시줄 아이콘: 원작 D2S 아이콘 대신 리모드 아이콘(레저렉션 런처 + DSV REMOD)
+fs.copyFileSync(path.join(__dirname, 'remod.ico'), path.join(unpacked, 'desktop', 'dist', 'icon.ico'));
 ASAR.pack(unpacked, OUT, OUT);
 // 실행 파일도 리모드 이름으로(원작 실행 파일과 따로 보이게)
 fs.copyFileSync(path.join(GAME, 'D2 Survivors.exe'), path.join(GAME, 'D2 Vampire Remod.exe'));
