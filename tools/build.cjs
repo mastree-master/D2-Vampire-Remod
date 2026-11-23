@@ -189,6 +189,8 @@ const PATCHES = [
   ['Game', 't=await rn(this.kit,this.equippedOf(this.kit.id))', 't=this.kit?.id===`warlock`?null:await rn(this.kit,this.equippedOf(this.kit.id))'],
   ['Game', 'Promise.all([Re(n),rn(n,this.equippedOf(e))])', 'Promise.all([Re(n),n.id===`warlock`?null:rn(n,this.equippedOf(e))])'],
   ['Game', 'rn(e,this.equippedOf(e.id)),this.classArt', 'e.id===`warlock`?null:rn(e,this.equippedOf(e.id)),this.classArt'],
+  // 악마술사 그림자 끔: 긴 낫 자루가 비스듬히 늘어나 캐릭터 옆에 줄무늬처럼 보임(대기 자세 1·3·5시)
+  ['Game', 't.visible=this.enabled&&e.visible,t.position.set(e.x,e.y)', 't.visible=this.enabled&&e.visible&&!/warlock/.test(t.children?.[0]?.texture?.source?.label??t.texture?.source?.label??``),t.position.set(e.x,e.y)'],
   // 글꼴 고르기(remod-popup.js): 눈누(jsDelivr)·Fontshare 웹폰트 주소만 바깥 요청 허용
   ['main', 'const own = /^(app|devtools|data|blob):/.test(details.url)', 'const own = /^(app|devtools|data|blob):/.test(details.url) || /^https:\\/\\/(cdn\\.jsdelivr\\.net\\/gh\\/project-?noonnu\\/|api\\.fontshare\\.com\\/v2\\/css\\?|cdn\\.fontshare\\.com\\/)/i.test(details.url)'],
   // 채팅 창(tools/remod-chat.js). 서버 요청 허용 경로에 chat·guild 를 더하고, 이름이 한글이라 쿼리에 % 도 허용
