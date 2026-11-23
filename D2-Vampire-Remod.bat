@@ -83,16 +83,6 @@ function Install {
         Set-Content "$Game\electron.version" $Electron
     }
 
-    # 3-1. 이전 버전 백업(다운그레이드용): 설치 폴더\backup\<이전 버전>\ 에 게임 파일(app.asar)과 리모드 묶음(src). 최근 3개만 남김
-    $old = if (Test-Path "$Home2\version.txt") { (Get-Content "$Home2\version.txt" -Raw).Trim().TrimStart([char]0xFEFF) } else { '' }
-    if ($old -and $old -ne $latest -and (Test-Path "$Game\resources\app.asar")) {
-        Show "이전 버전 v$old 백업 중" 61
-        $bk = "$Home2\backup\$old"; Remove-Item $bk -Recurse -Force -ErrorAction SilentlyContinue; New-Item -ItemType Directory -Force $bk | Out-Null
-        Copy-Item "$Game\resources\app.asar" "$bk\app.asar" -Force
-        if (Test-Path $Src) { Copy-Item $Src "$bk\src" -Recurse -Force }
-        Get-ChildItem "$Home2\backup" -Directory | Sort-Object LastWriteTime -Descending | Select-Object -Skip 3 | Remove-Item -Recurse -Force
-    }
-
     # 4. 최신 리모드
     Show "리모드 v$latest 받는 중" 62
     try { Get "https://github.com/$Repo/archive/refs/heads/main.zip" "$tmp\remod.zip" 62 78 } catch { Fail "리모드를 받지 못했습니다.`n$($_.Exception.Message)" }
