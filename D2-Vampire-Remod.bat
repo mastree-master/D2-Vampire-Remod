@@ -89,7 +89,9 @@ function Install {
     Show '리모드 푸는 중' 80
     Expand-Archive "$tmp\remod.zip" $tmp -Force
     Remove-Item $Src -Recurse -Force -ErrorAction SilentlyContinue
-    Move-Item (Get-ChildItem $tmp -Directory | Select-Object -First 1).FullName $Src
+    # 지우지 못한 파일(잠김)이 있으면 Move 가 src 안으로 한 겹 들어가 옛 파일로 빌드됨: 언제나 덮어쓰기
+    $new = (Get-ChildItem $tmp -Directory | Select-Object -First 1).FullName
+    New-Item -ItemType Directory -Force $Src | Out-Null; Copy-Item "$new\*" $Src -Recurse -Force; Remove-Item $new -Recurse -Force -ErrorAction SilentlyContinue
     Copy-Item "$Src\tools\D2S-MyPatch.pinned.bat" "$Src\tools\D2S-MyPatch.bat" -Force
     Copy-Item "$Src\tools\remod.ico" "$Home2\remod.ico" -Force
     New-Item -ItemType Directory -Force "$Game\resources" | Out-Null
