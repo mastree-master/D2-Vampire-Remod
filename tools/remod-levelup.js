@@ -56,7 +56,7 @@
     const n = Math.min(3, base.length), wins = base.map(([, i]) => i).sort(() => Math.random() - 0.5).slice(0, n);
     const rep = Math.max(1, Math.ceil(8 / base.length)), items = [...Array(rep)].flatMap(() => base);
     const fl = (lu.querySelector('.border-right') ?? lu.querySelector('.tree')).getBoundingClientRect().left;
-    const colW = (fl - 20) / n, R = Math.max(50, Math.min(colW / 2 - 45, 150)); // 트리 왼쪽에 가로로 n 개, 각 룰렛 아래에 설명(세로 공간을 설명에 씀)
+    const colW = (fl - 20) / n, R = Math.max(50, Math.min(colW / 2 - 60, 142)); // 트리 왼쪽에 가로로 n 개, 각 룰렛 아래에 설명(세로 공간을 설명에 씀)
     const gold = Math.random() < 0.08 ? Math.floor(Math.random() * n) : -1;
     await Promise.all(wins.map(async (want, j) => {
       const cx = 10 + colW * j + colW / 2, cy = 60 + R + 40;
