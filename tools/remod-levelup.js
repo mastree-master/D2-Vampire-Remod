@@ -55,7 +55,7 @@
     // 룰렛 n 개: 원 칸은 이번 고르기들(8칸이 차게 되풀이), 룰렛마다 다른 고르기에 멈춤(섞은 순서)
     const n = Math.min(3, base.length), wins = base.map(([, i]) => i).sort(() => Math.random() - 0.5).slice(0, n);
     const rep = Math.max(1, Math.ceil(8 / base.length)), items = [...Array(rep)].flatMap(() => base);
-    const fl = (lu.querySelector('.border-right') ?? lu.querySelector('.tree')).getBoundingClientRect().left;
+    const fl = Math.min(innerWidth * 0.7, (lu.querySelector('.border-right') ?? lu.querySelector('.tree')).getBoundingClientRect().left); // 트리 판이 아직 안 자리 잡았어도 오른쪽 30% 는 비움
     const colW = (fl - 20) / n, R = Math.max(50, Math.min(colW / 2 - 60, 142)); // 트리 왼쪽에 가로로 n 개, 각 룰렛 아래에 설명(세로 공간을 설명에 씀)
     const gold = Math.random() < 0.08 ? Math.floor(Math.random() * n) : -1;
     await Promise.all(wins.map(async (want, j) => {
@@ -122,7 +122,7 @@
     lu.classList.add('__fate');
     // 트리 판을 화면 오른쪽 끝으로 붙여 왼쪽을 룰렛·설명이 넓게 씀
     const fr = lu.querySelector('.frame'), br = lu.querySelector('.border-right');
-    if (fr && br) { fr.style.transition = 'none'; fr.style.translate = ''; fr.style.scale = ''; fr.style.transformOrigin = '0 0'; const f0 = fr.getBoundingClientRect(), b0 = br.getBoundingClientRect(), kf = lu.getBoundingClientRect().width / lu.offsetWidth || 1, s = (((document.getElementById('__chat')?.getBoundingClientRect().top ?? innerHeight * 0.85) - 70) - 40) / b0.height; fr.style.scale = String(s); fr.style.translate = `${(innerWidth - 12 - f0.left - s * (b0.right - f0.left)) / kf}px ${(40 - f0.top - s * (b0.top - f0.top)) / kf}px`; } // 게임 transform 은 두고 translate·scale 속성으로만(translate 는 부모 배율 기준, 게임 transition 은 끔)
+    if (fr && br) { fr.style.transition = 'none'; fr.style.translate = ''; fr.style.scale = ''; fr.style.transformOrigin = '0 0'; const f0 = fr.getBoundingClientRect(), b0 = br.getBoundingClientRect(), kf = lu.getBoundingClientRect().width / lu.offsetWidth || 1, s = b0.height < 50 ? 1 : (((document.getElementById('__chat')?.getBoundingClientRect().top ?? innerHeight * 0.85) - 70) - 40) / b0.height; fr.style.scale = String(s); fr.style.translate = `${(innerWidth - 12 - f0.left - s * (b0.right - f0.left)) / kf}px ${(40 - f0.top - s * (b0.top - f0.top)) / kf}px`; } // 게임 transform 은 두고 translate·scale 속성으로만(translate 는 부모 배율 기준, 게임 transition 은 끔)
     const choices = [...lu.querySelectorAll('.d2-choice')];
     const k = choices.map((b) => { const i = b.querySelector('.skill-icon'); return (i ? iconKey(i) : '') + b.textContent; }).join('|') + '#' + [...lu.querySelectorAll('.choose .actions button')].map((b) => b.textContent).join(); // 리롤 횟수도 넣음: 고르기가 똑같이 다시 나와도 다시 돌림
     if (k !== key && !busy) { key = k; roll(choices); return; }
