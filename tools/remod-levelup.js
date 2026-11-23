@@ -130,7 +130,7 @@
       // 룰렛마다 오른쪽에 당첨 기술 설명(원작 카드를 옮겨 보여 줌)
       const cards = new Set(wheels.map((w) => w.now()));
       lu.querySelectorAll('.d2-choice').forEach((x) => { x.classList.toggle('__show', cards.has(x)); if (!cards.has(x)) x.style.transform = ''; });
-      for (const w of wheels) { const b = w.now(); b.style.transform = ''; b.style.transformOrigin = '0 0'; const r0 = b.getBoundingClientRect(), k = r0.width / b.offsetWidth || 1, sc = Math.min(1, (w.colW - 10) / r0.width); b.style.transform = `translate(${(w.cx - r0.width * sc / 2 - r0.left) / k}px,${(w.cy + w.R + 56 - r0.top) / k}px) scale(${sc})`; }
+      { const y0 = Math.max(...wheels.map((w) => w.cy + w.R + 56)); let y = y0; const fl = wheels.reduce((s, w) => s + w.colW, 0) + 20; for (const w of [...wheels].sort((a, b) => a.cx - b.cx)) { const b = w.now(); b.style.transform = ''; b.style.transformOrigin = '0 0'; const r0 = b.getBoundingClientRect(), k = r0.width / b.offsetWidth || 1, sc = Math.min(1.5, (fl - 20) / r0.width, (innerHeight - y0 - 60) / wheels.length / r0.height); b.style.transform = `translate(${(10 - r0.left) / k}px,${(y - r0.top) / k}px) scale(${sc})`; y += r0.height * sc + 6; } } // 설명: 룰렛 아래에 왼쪽 룰렛부터 세로로, 1.5배까지(글씨가 캔버스라 줄이면 못 읽음)
       // 리롤·스킵·제외 단추: 트리 테두리 아래
       const ac = lu.querySelector('.choose .actions'), fb = (lu.querySelector('.border-right') ?? lu.querySelector('.tree')).getBoundingClientRect();
       if (ac) { ac.style.transform = ''; const a0 = ac.getBoundingClientRect(), ka = a0.width / ac.offsetWidth || 1; ac.style.transform = `translate(${(fb.left + fb.width / 2 - a0.width / 2 - a0.left) / ka}px,${(fb.bottom + 12 - a0.top) / ka}px)`; }
