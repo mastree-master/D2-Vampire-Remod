@@ -29,8 +29,10 @@ function myPatch() {
   fs.writeFileSync(path.join(res, 'app.asar.sha256'), require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(res, 'app.asar'))).digest('hex'));
   const real = path.join(process.env.APPDATA, 'D2S-MyPatch');
   // 게임 안 "리모드 설정"에서 저장한 값이 있으면 그것, 없으면 기존 패치 설정
-  const own = path.join(ROOT, 'remod-options.json');
-  const options = JSON.parse(fs.readFileSync(fs.existsSync(own) ? own : path.join(real, 'options.json'), 'utf8').replace(/^﻿/, ''));
+  // 설치본은 설정 창이 저장하는 곳(설치 폴더\remod-options.json)을 읽음. 없으면 받은 리모드의 기본값으로 시작
+  const own = process.env.D2S_REMOD_GAME ? path.join(process.env.D2S_REMOD_GAME, '..', 'remod-options.json') : path.join(ROOT, 'remod-options.json');
+  const def = fs.existsSync(path.join(ROOT, 'remod-options.json')) ? path.join(ROOT, 'remod-options.json') : path.join(real, 'options.json');
+  const options = JSON.parse(fs.readFileSync(fs.existsSync(own) ? own : def, 'utf8').replace(/^﻿/, ''));
   fs.writeFileSync(path.join(app, 'options.json'), JSON.stringify({ ...options, watch: false }));
   if (!fs.existsSync(own)) fs.writeFileSync(own, JSON.stringify({ ...options, watch: false }, null, 1)); // 게임 안 설정 창의 시작값 // 감시는 실제 작업 스케줄러를 바꾸므로 끈다
   if (!process.env.D2S_REMOD_GAME && fs.existsSync(path.join(real, 'speeds.txt'))) fs.copyFileSync(path.join(real, 'speeds.txt'), path.join(app, 'speeds.txt'));
@@ -122,6 +124,9 @@ const PATCHES = [
   // 워락: 원작 추출기가 1.14 모양에 맞추려 뺀 워락 줄(plrtype 9번째)을 살리고 몸 그림(chars/wk)을 꺼낸다
   ['extract-worker', '  druid: [{ weaponClass: "1HS", items: { RH: "clb", SH: "buc" } }],', '  druid: [{ weaponClass: "1HS", items: { RH: "clb", SH: "buc" } }],\n  warlock: [{ weaponClass: "STF", items: { RH: "scy" } }],'],
   ['extract-worker', '  plrtype: { rows: 8 },', '  plrtype: { rows: 9 },'],
+  // 워락 몸 그림: D2R 의 옛 chars/wk 는 강령술사 그림 복사본(같은 파일)이라, HD 3D 모델(hd/character/player/warlock)을 직접 그려 덮어씀(tools/remod-wk-hd.js)
+  ['extract-worker', '^', 'var remodGr2=(()=>{var module={exports:{}};' + fs.readFileSync(path.join(__dirname, 'gr2-model.cjs'), 'utf8') + '\nreturn module.exports;})();\n' + fs.readFileSync(path.join(__dirname, 'remod-wk-hd.js'), 'utf8')],
+  ['extract-worker', '    manifest[name] = withDefaults(anims, loadouts[0].weaponClass);', '    if (name === "warlock") try { Object.assign(anims, remodWkHd(require("node:worker_threads").workerData?.extractLane?.installDir ?? installDir, anims, write2)); } catch (e) { console.warn("warlock HD:", e.message); }\n    manifest[name] = withDefaults(anims, loadouts[0].weaponClass);'],
   // 워락 동작 속도: D2R animdata 에 워락 줄이 없어 같은 동작의 드루이드 속도를 쓴다(없으면 fps 가 빠져 그림자·동작이 깨짐)
   ['extract-worker', 'if (sheet) anims[key] = { ...write2(`sprites/classes/${name}-${key}.png`, sheet), ...rate(`${token}${mode2}${loadout.weaponClass}`) };', 'if (sheet) anims[key] = { ...write2(`sprites/classes/${name}-${key}.png`, sheet), ...(name === "warlock" ? { fps: manifest.druid?.[key]?.fps ?? manifest.druid?.["1HS-NU"]?.fps ?? 12 } : rate(`${token}${mode2}${loadout.weaponClass}`)) };'],
   ['extract-worker', '  pal: "paladin",\n  sor: "sorceress"\n};', '  pal: "paladin",\n  sor: "sorceress",\n  war: "warlock"\n};'],
@@ -179,6 +184,8 @@ const PATCHES = [
   ['Game', 'autoSell(e){let t=this.world.player.cls;', 'autoSell(e){globalThis.__dis?.(this.save,e);let t=this.world.player.cls;'],
   ['Game', 'sold(e,t,n){L(this.save)', 'sold(e,t,n){globalThis.__dis?.(this.save,e);L(this.save)'],
   ['saveTransfer', 'A_={magicArrow:','A_={...' + JSON.stringify(WK_A) + ',magicArrow:'],
+  // 글꼴 고르기(remod-popup.js): 눈누(jsDelivr)·Fontshare 웹폰트 주소만 바깥 요청 허용
+  ['main', 'const own = /^(app|devtools|data|blob):/.test(details.url)', 'const own = /^(app|devtools|data|blob):/.test(details.url) || /^https:\\/\\/(cdn\\.jsdelivr\\.net\\/gh\\/project-?noonnu\\/|api\\.fontshare\\.com\\/v2\\/css\\?|cdn\\.fontshare\\.com\\/)/i.test(details.url)'],
   // 채팅 창(tools/remod-chat.js). 서버 요청 허용 경로에 chat·guild 를 더하고, 이름이 한글이라 쿼리에 % 도 허용
   ['main', '|hc\\/(checkin|act|checkout|deaths|runs|heroes|ladder))(\\?[A-Za-z0-9=&_-]{0,120})?$/;', '|chat|guild|friend|room|mail|gmok|id|pos|party|tower|ver|look|pvp|guard|rank|tags|hc\\/(checkin|act|checkout|deaths|runs|heroes|ladder))(\\?[A-Za-z0-9=&_%.-]{0,240})?$/;'],
   ['Game', '^', fs.readFileSync(path.join(__dirname, 'remod-chat.js'), 'utf8')],

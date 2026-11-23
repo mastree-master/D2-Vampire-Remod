@@ -306,7 +306,9 @@
         ctx.clearRect(0, 0, cv.width, cv.height);
         ids.forEach((c, i) => {
           const [a, ai, s, si] = H[i], on = c === cls, an = on ? s : a;
-          frame(ctx, an, on ? si : ai, t, pos(i), cv.height * (c === 'warlock' ? 0.73 : 0.62), (cv.height * (on ? 0.6 : 0.48)) / an.height);
+          // 악마술사는 인게임 몸 그림(원점 = 발): 발을 다른 직업 발 줄(≈0.78)에, 키(원점 위 높이)를 다른 직업 몸 크기에 맞춤
+          if (c === 'warlock') frame(ctx, an, on ? si : ai, t, pos(i), cv.height * 0.78, (cv.height * (on ? 0.95 : 0.78)) / an.originY);
+          else frame(ctx, an, on ? si : ai, t, pos(i), cv.height * 0.62, (cv.height * (on ? 0.6 : 0.48)) / an.height);
           ctx.font = `bold 18px ${FONT}`; ctx.textAlign = 'center'; ctx.fillStyle = on ? '#fff' : '#c7b377';
           ctx.fillText(KO[c], pos(i), cv.height * 0.95);
         });

@@ -78,6 +78,8 @@
     if (!s || !globalThis.__regen) return true;
     const { problems, tampered, owners } = check(s, cls);
     const r = await api('POST', '/guard', { fp: `${s.born}:${s.leaderboard?.id ?? ''}`, cls, problems, tampered, owners, digest: await globalThis.d2app?.remodDigest?.().catch?.(() => null) ?? null, ticket: s.remodTicket ?? null });
+    // 서버에 내 열쇠가 없으면(서버 기록이 날아감 등) 다시 등록하고 한 번 더
+    if (r?.error === 'no_id' && !depth) { const n = await api('POST', '/id', { nick: localStorage.getItem('d2s:nick') ?? '' }); if (n?.name) { globalThis.__myName = n.name; return globalThis.__guardOk(cls, depth + 1); } }
     if (r?.ticket) { s.remodTicket = r.ticket; try { globalThis.__saveNow?.(); } catch {} } // 세이브 입장권: 이 세이브가 살아 있는 곳은 여기
     if (r?.marked && !globalThis.__markedShown) { globalThis.__markedShown = 1; box('⚠ 변조된 게임 파일이 감지되었습니다.\n이 계정에는 [변조] 표시가 붙고 기록·랭킹이 남지 않습니다.\n정식 설치 파일(D2-Vampire-Remod.bat)로 다시 설치하세요.'); }
     if (r?.ok || (!r && !problems.length)) return true; // 서버 연결이 안 되면 내 검사만
