@@ -2,6 +2,7 @@
 // 트리에 없는 고르기(지속 효과·다른 쪽 기술)는 트리 아래 줄에. 마우스를 올리면 그 카드 설명, 누르면 배움(원작 카드 버튼을 대신 누름). 1·2·3 키·리롤은 원작 그대로
 // 낮은 확률 황금 칸: 금빛과 퀘스트 완료 소리, 고르면 한 번 더 고르기(레벨업 하나 더). 고르면 아이콘이 캐릭터에게 빨려 들어감(기술서 소리)
 (() => {
+  const __luOn = () => { const g = globalThis.__gm, e = document.getElementById('level-up'); return g?.state === 'levelUp' || (g?.state === 'camp' && !!e?.offsetWidth && getComputedStyle(e).display !== 'none'); }; // 판 안 레벨업 + 마을 첫 기술 고르기
   const snd = (n, v = 0.6) => { try { const a = new Audio(`app://game/d2/sounds/${n}.wav`); a.volume = v; a.play().catch(() => {}); } catch {} };
   const st = document.createElement('style');
   st.textContent = `#level-up.__fate{overflow:visible}#level-up.__fate .tree{transform:translateX(18px)}#level-up.__fate .d2-choice{display:none!important}#level-up.__fate .d2-choice.__show{display:flex!important}
@@ -81,7 +82,7 @@
           ring.style.transform = `rotate(${rot}deg)`;
           for (const d of ring.children) d.style.rotate = `${-rot}deg`;
           const at = Math.floor(rot / (360 / m)); if (at !== last) { last = at; if (j === 0) snd('cursor/button', 0.2); }
-          if (t < 1 && lu.isConnected && globalThis.__gm?.state === 'levelUp') requestAnimationFrame(step); else done();
+          if (t < 1 && lu.isConnected && __luOn()) requestAnimationFrame(step); else done();
         };
         requestAnimationFrame(step);
       });
@@ -94,14 +95,14 @@
       wheels.push(w);
     }));
     await new Promise((r) => setTimeout(r, 300));
-    if (!lu.isConnected || globalThis.__gm?.state !== 'levelUp') { clear(); busy = false; return; }
+    if (!lu.isConnected || !__luOn()) { clear(); busy = false; return; }
     if (gold >= 0) snd('cursor/questdone', 0.8); else snd('item/rune', 0.6);
     show(null);
     busy = false;
   };
   // 룰렛 결정 중엔 트리·카드·숫자 키로 다른 기술을 못 배우게(룰렛 칸만 배움). 트리의 빛나는 칸을 누르면 그 룰렛을 누른 것과 같음
   const guard = (e) => {
-    if (pass || !wheels.length || globalThis.__gm?.state !== 'levelUp') return;
+    if (pass || !wheels.length || !__luOn()) return;
     if (e.type === 'keydown') { if (/^[1-9]$/.test(e.key)) { e.preventDefault(); e.stopImmediatePropagation(); } return; }
     const t = e.target.closest?.('#level-up .tree-slot, #level-up .d2-choice'); if (!t) return;
     if (t.matches('.d2-choice') && wheels.some((w) => w.now() === t)) return; // 룰렛 옆 설명 카드는 원작 카드 그대로 눌러 배움·제외
@@ -112,7 +113,7 @@
   };
   for (const ev of ['click', 'mousedown', 'pointerdown', 'mouseup', 'pointerup', 'keydown']) addEventListener(ev, guard, true);
   setInterval(() => {
-    const lu = document.getElementById('level-up'), on = lu && globalThis.__gm?.state === 'levelUp' && lu.offsetWidth;
+    const lu = document.getElementById('level-up'), on = lu && __luOn() && lu.offsetWidth;
     if (!on) {
       if (key) { clear(); key = ''; }
       // 같은 창을 마을의 제외 카드 고르기 등에서도 씀: 룰렛용으로 옮긴 카드·단추 자리를 지워 원작 배치로(남아 있으면 단추가 화면 밖으로 밀려 스크롤바가 생김)

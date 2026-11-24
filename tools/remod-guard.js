@@ -150,3 +150,17 @@
   addEventListener('keydown', alt(true), true); addEventListener('keyup', alt(false), true); addEventListener('blur', () => { globalThis.__alt = false; });
   setInterval(() => { globalThis.__rwRename(); stamp(); wrapLock(); }, 1000);
 })();
+// 저장 데이터 창(원작 .transfer-view) 제목 밑에 눈에 띄는 ※주의: 세이브는 한 곳에서만 살아 있음, 고치면 변조
+(() => {
+  new MutationObserver(() => {
+    for (const v of document.querySelectorAll('.transfer-view')) {
+      if (v.querySelector('.__savewarn')) continue;
+      const h = v.querySelector('h2'); if (!h) continue;
+      const w = document.createElement('div');
+      w.className = '__savewarn';
+      w.style.cssText = 'margin:6px auto 4px;padding:8px 12px;max-width:470px;border:2px solid #e03030;background:#3a0a0a;color:#ff6a5a;font:bold 14px/1.5 sans-serif;text-align:center';
+      w.textContent = '※ 주의 — 세이브는 마지막으로 켠 한 곳에서만 살아 있습니다. 다른 PC 로 옮기거나 코드를 가져오면 원래 PC 의 세이브는 더 이상 쓸 수 없습니다. 세이브 코드·파일을 고치면 변조로 경고·차단됩니다.';
+      h.after(w);
+    }
+  }).observe(document.documentElement, { childList: true, subtree: true });
+})();
