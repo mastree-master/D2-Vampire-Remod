@@ -123,7 +123,8 @@ function Install {
     Show "v$latest 설치를 마쳤습니다. 바탕화면의 'D2 Vampire Remod' 로 실행하세요." 100
     $btn.Text = '실행'; $btn.Enabled = $true
     $btn.Remove_Click($script:onInstall); $btn.Add_Click({ Start-Process "$Game\D2 Vampire Remod.exe"; $f.Close() })
-    if ($Mode -eq 'update') { Start-Process "$Game\D2 Vampire Remod.exe"; $f.Close() }
+    # 런처에서 '켤 때 자동 업데이트'로 받은 경우도 끝나면 바로 실행
+    if ($Mode -eq 'update' -or ($chk -and $chk.Checked)) { Start-Process "$Game\D2 Vampire Remod.exe"; $f.Close() }
 }
 
 # 런처 모드(바탕화면 아이콘, 또는 설치된 PC 에서 이 bat 더블클릭): 지금·최신 버전, [업데이트] [실행], 켤 때 자동 업데이트 체크
