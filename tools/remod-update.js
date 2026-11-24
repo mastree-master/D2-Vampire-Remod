@@ -36,7 +36,7 @@
   setInterval(() => {
     if (!need || !document.body) return;
     const st = globalThis.__gm?.state;
-    if (st === 'playing' || st === 'paused') { if (!warned) { warned = true; globalThis.__gm?.hud?.banner?.(`새 버전 v${need.ver} 이 나왔습니다. 이 판이 끝나면 업데이트해야 합니다`, 'unique'); } return; }
+    if (globalThis.__gm?.inRun || st === 'playing' || st === 'paused') { // 판 중(레벨업·인벤 창 포함)엔 막지 않고 알림만 if (!warned) { warned = true; globalThis.__gm?.hud?.banner?.(`새 버전 v${need.ver} 이 나왔습니다. 이 판이 끝나면 업데이트해야 합니다`, 'unique'); } return; }
     block();
   }, 1000);
 })();
